@@ -6,6 +6,8 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.56"
     }
+    random = {
+    }
   }
 }
 
@@ -72,7 +74,7 @@ resource "aws_key_pair" "deployer" {
   public_key = tls_private_key.ssh_key.public_key_openssh
 }
 
-resource "aws_security_group" "allow_ssh_http_https" {
+resource "aws_security_group" "allow_ssh_rdp" {
   vpc_id = aws_vpc.main_vpc.id
 
   ingress {
@@ -83,15 +85,8 @@ resource "aws_security_group" "allow_ssh_http_https" {
   }
 
   ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
+    from_port   = 3389
+    to_port     = 3389
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -108,38 +103,61 @@ resource "aws_security_group" "allow_ssh_http_https" {
   }
 }
 
+resource "random_string" "password" {
+  count            = 1
+  length           = 10
+  special          = true
+  override_special = "/@£$"
+}
+
 resource "aws_instance" "ubuntu_instance" {
   count                       = 1
-  ami                         = "ami-0a0e5d9c7acc336f1"
-  instance_type               = "t2.micro"
+  ami                         = "ami-0cad6ee50670e3d0e"
+  instance_type               = "t3.small"
   subnet_id                   = aws_subnet.public_subnet.id
-  vpc_security_group_ids      = [aws_security_group.allow_ssh_http_https.id]
+  vpc_security_group_ids      = [aws_security_group.allow_ssh_rdp.id]
   key_name                    = aws_key_pair.deployer.key_name
   associate_public_ip_address = true
 
   depends_on = [
-    aws_security_group.allow_ssh_http_https,
+    aws_security_group.allow_ssh_rdp,
     aws_internet_gateway.igw
   ]
 
   user_data       = <<-EOF
               #!/bin/bash
               sudo apt update -y
-              sudo sed -i 's/^#.*WaylandEnable=.*/WaylandEnable=false/' /etc/gdm3/custom.conf
 
-              # sudo apt install -y nginx
+              sudo apt install xfce4 xfce4-goodies gnupg -y
+              sudo apt install xrdp -y
+          
 
-              # # Create index.html with H1 tag in the default NGINX web directory
-              # echo "<h1>Hello From Ubuntu EC2 Instance!!!</h1>" | sudo tee /var/www/html/index.html
+              sudo update-alternatives --set x-session-manager /usr/bin/startxfce4
+              curl -fsSL https://pgp.mongodb.com/server-7.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
+              echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
 
-              # # Update NGINX to listen on port 8080
-              # sudo sed -i 's/listen 80 default_server;/listen 8080 default_server;/g' /etc/nginx/sites-available/default
+              sudo apt update -y
+              sudo apt-get install -y mongodb-atlas
+              wget https://downloads.mongodb.com/compass/mongodb-compass_1.44.5_amd64.deb
+              sudo apt install ./mongodb-compass_1.44.5_amd64.deb
+              mkdir -p -m 0755 /home/ubuntu/Desktop
+              chown ubuntu:ubuntu /home/ubuntu/Desktop
+              echo -e "[Desktop Entry]\nVersion=1.0\nType=Application\nName=MongoDB Compass\nComment=The MongoDB GUI\nExec=mongodb-compass %U\nIcon=mongodb-compass\nPath=\nTerminal=false\nStartupNotify=true"  | tee "/home/ubuntu/Desktop/MongoDB Compass.desktop"
+              chown ubuntu:ubuntu "/home/ubuntu/Desktop/MongoDB Compass.desktop"
+              echo "ubuntu:${random_string.password[count.index].result}" | sudo chpasswd
 
-              # # Restart NGINX to apply the changes
-              # sudo systemctl restart nginx
               EOF
 
   tags = {
     Name = "${format("jumphost-%03d", count.index + 1)}"
   }
+}
+
+output "instance_public_ips" {
+    value = aws_instance.ubuntu_instance[*].public_ip
+
+}
+
+output "instance_paswords" {
+  value = random_string.password[*].result
 }
