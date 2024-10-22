@@ -1,8 +1,3 @@
-variable replicas {
-  type = number
-  default = 1
-}
-
 terraform {
   required_version = ">= 1.0"
 
@@ -18,7 +13,7 @@ terraform {
 
 
 provider "aws" {
-  region = "us-east-1"
+  region = var.region
 }
 
 
@@ -32,6 +27,9 @@ resource "aws_vpc" "main_vpc" {
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main_vpc.id
   tags = {
+    owner = var.owner
+    expires = var.expires
+    purpose = var.purpose
     Name = "main-igw"
   }
 }
@@ -39,9 +37,12 @@ resource "aws_internet_gateway" "igw" {
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.main_vpc.id
   cidr_block              = "10.0.1.0/24"
-  availability_zone       = "us-east-1a"
+  availability_zone       = var.availability_zone
   map_public_ip_on_launch = true
   tags = {
+    owner = var.owner
+    expires = var.expires
+    purpose = var.purpose
     Name = "public-subnet"
   }
 }
@@ -51,6 +52,11 @@ resource "aws_route_table" "public_rt" {
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
+  }
+  tags = {
+    owner = var.owner
+    expires = var.expires
+    purpose = var.purpose
   }
 }
 
@@ -104,7 +110,10 @@ resource "aws_security_group" "allow_ssh_rdp" {
   }
 
   tags = {
-    Name = "allow-ssh-https-8080"
+    owner = var.owner
+    expires = var.expires
+    purpose = var.purpose
+    Name = "allow-ssh-rdp"
   }
 }
 
@@ -121,7 +130,7 @@ resource "random_string" "password" {
 
 resource "aws_instance" "ubuntu_instance" {
   count                       = var.replicas
-  ami                         = "ami-0cad6ee50670e3d0e"
+  ami                         = var.ami_id
   instance_type               = "t3.small"
   subnet_id                   = aws_subnet.public_subnet.id
   vpc_security_group_ids      = [aws_security_group.allow_ssh_rdp.id]
@@ -153,14 +162,18 @@ resource "aws_instance" "ubuntu_instance" {
               sudo apt install ./mongodb-compass_1.44.5_amd64.deb
               mkdir -p -m 0755 /home/ubuntu/Desktop
               chown ubuntu:ubuntu /home/ubuntu/Desktop
-              echo -e "[Desktop Entry]\nVersion=1.0\nType=Application\nName=MongoDB Compass\nComment=The MongoDB GUI\nExec=mongodb-compass %U\nIcon=mongodb-compass\nPath=\nTerminal=false\nStartupNotify=true"  | tee "/home/ubuntu/Desktop/MongoDB Compass.desktop"
-              chown ubuntu:ubuntu "/home/ubuntu/Desktop/MongoDB Compass.desktop"
+              echo -e "[Desktop Entry]\nVersion=1.0\nType=Application\nName=MongoDB Compass\nComment=The MongoDB GUI\nExec=mongodb-compass %U\nIcon=mongodb-compass\nPath=\nTerminal=false\nStartupNotify=true"  | tee "/usr/share/applications/MongoDB Compass.desktop"
+              ln -s "/usr/share/applications/MongoDB Compass.desktop" "/home/ubuntu/Desktop/MongoDB Compass.desktop"
+              # chown ubuntu:ubuntu "/home/ubuntu/Desktop/MongoDB Compass.desktop"
               # gio set -t string "/home/ubuntu/Desktop/MongoDB Compass.dekstop" metadata::xfce-exe-checksum "$(sha256sum "/home/ubuntu/Desktop/MongoDB Compass.dekstop"} | awk '{print $1}')"
               echo "ubuntu:${random_string.password[count.index].result}" | sudo chpasswd
 
               EOF
 
   tags = {
+    owner = var.owner
+    expires = var.expires
+    purpose = var.purpose
     Name = "${format("jumphost-%03d", count.index + 1)}"
   }
 }
