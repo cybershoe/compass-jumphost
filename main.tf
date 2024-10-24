@@ -125,7 +125,94 @@ resource "random_string" "password" {
   min_upper        = 1
   min_special      = 1
   min_numeric      = 1
-  override_special = "$#!+@%&^"
+  override_special = "$#+@%^"
+}
+
+resource "aws_s3_bucket" "config_bucket" {
+  force_destroy = true
+  tags = {
+    owner = var.owner
+    expires = var.expires
+    purpose = var.purpose
+  }
+}
+
+# resource "aws_s3_bucket_ownership_controls" "config_bucket_controls" {
+#   bucket = aws_s3_bucket.config_bucket.id
+#   rule {
+#     object_ownership = "BucketOwnerPreferred"
+#   }
+# }
+
+resource "aws_s3_bucket_acl" "config_acl" {
+  # depends_on = [aws_s3_bucket_ownership_controls.config_bucket_controls]
+
+  bucket = aws_s3_bucket.config_bucket.id
+  acl    = "private"
+}
+
+resource "aws_s3_object" "jumphost_setup" {
+  bucket = aws_s3_bucket.config_bucket.id
+  key    = "setup.sh"
+  source = "files/setup.sh"
+
+  # The filemd5() function is available in Terraform 0.11.12 and later
+  # For Terraform 0.11.11 and earlier, use the md5() function and the file() function:
+  # etag = "${md5(file("path/to/file"))}"
+  etag = filemd5("files/setup.sh")
+  tags = {
+    owner = var.owner
+    expires = var.expires
+    purpose = var.purpose
+  }
+}
+
+resource "aws_iam_role" "jumphost_iam_role" {
+    name = "jumphost_iam_role"
+    assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_instance_profile" "jumphost_instance_profile" {
+    name = "jumphost_instance_profile"
+    role = "jumphost_iam_role"
+}
+
+resource "aws_iam_role_policy" "jumphost_iam_role_policy" {
+  name = "jumphost_iam_role_policy"
+  role = "${aws_iam_role.jumphost_iam_role.id}"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket"],
+      "Resource": ["${aws_s3_bucket.config_bucket.arn}"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Resource": ["${aws_s3_bucket.config_bucket.arn}/*"]
+    }
+  ]
+}
+EOF
 }
 
 resource "aws_instance" "ubuntu_instance" {
@@ -136,6 +223,7 @@ resource "aws_instance" "ubuntu_instance" {
   vpc_security_group_ids      = [aws_security_group.allow_ssh_rdp.id]
   key_name                    = aws_key_pair.deployer.key_name
   associate_public_ip_address = true
+  iam_instance_profile = "${aws_iam_instance_profile.jumphost_instance_profile.id}"
 
   depends_on = [
     aws_security_group.allow_ssh_rdp,
@@ -185,4 +273,12 @@ output "instance_public_ips" {
 
 output "instance_paswords" {
   value = random_string.password[*].result
+}
+
+output "s3_bucket" {
+  value = aws_s3_bucket.config_bucket
+}
+
+output "s3_object" {
+  value = aws_s3_object.jumphost_setup
 }
