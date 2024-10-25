@@ -128,93 +128,6 @@ resource "random_string" "password" {
   override_special = "$#+@%^"
 }
 
-resource "aws_s3_bucket" "config_bucket" {
-  force_destroy = true
-  tags = {
-    owner = var.owner
-    expires = var.expires
-    purpose = var.purpose
-  }
-}
-
-# resource "aws_s3_bucket_ownership_controls" "config_bucket_controls" {
-#   bucket = aws_s3_bucket.config_bucket.id
-#   rule {
-#     object_ownership = "BucketOwnerPreferred"
-#   }
-# }
-
-resource "aws_s3_bucket_acl" "config_acl" {
-  # depends_on = [aws_s3_bucket_ownership_controls.config_bucket_controls]
-
-  bucket = aws_s3_bucket.config_bucket.id
-  acl    = "private"
-}
-
-resource "aws_s3_object" "jumphost_setup" {
-  bucket = aws_s3_bucket.config_bucket.id
-  key    = "setup.sh"
-  source = "files/setup.sh"
-
-  # The filemd5() function is available in Terraform 0.11.12 and later
-  # For Terraform 0.11.11 and earlier, use the md5() function and the file() function:
-  # etag = "${md5(file("path/to/file"))}"
-  etag = filemd5("files/setup.sh")
-  tags = {
-    owner = var.owner
-    expires = var.expires
-    purpose = var.purpose
-  }
-}
-
-resource "aws_iam_role" "jumphost_iam_role" {
-    name = "jumphost_iam_role"
-    assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_instance_profile" "jumphost_instance_profile" {
-    name = "jumphost_instance_profile"
-    role = "jumphost_iam_role"
-}
-
-resource "aws_iam_role_policy" "jumphost_iam_role_policy" {
-  name = "jumphost_iam_role_policy"
-  role = "${aws_iam_role.jumphost_iam_role.id}"
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": ["s3:ListBucket"],
-      "Resource": ["${aws_s3_bucket.config_bucket.arn}"]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:GetObject"
-      ],
-      "Resource": ["${aws_s3_bucket.config_bucket.arn}/*"]
-    }
-  ]
-}
-EOF
-}
-
 resource "aws_instance" "ubuntu_instance" {
   count                       = var.replicas
   ami                         = var.ami_id
@@ -223,40 +136,13 @@ resource "aws_instance" "ubuntu_instance" {
   vpc_security_group_ids      = [aws_security_group.allow_ssh_rdp.id]
   key_name                    = aws_key_pair.deployer.key_name
   associate_public_ip_address = true
-  iam_instance_profile = "${aws_iam_instance_profile.jumphost_instance_profile.id}"
 
   depends_on = [
     aws_security_group.allow_ssh_rdp,
     aws_internet_gateway.igw
   ]
 
-  user_data       = <<-EOF
-              #!/bin/bash
-              sudo apt update -y
-
-              sudo apt install xfce4 xfce4-goodies gnupg chromium-browser -y
-              sudo apt install xrdp -y
-              sudo update-alternatives --set x-session-manager /usr/bin/startxfce4
-
-              wget -qO- https://www.mongodb.org/static/pgp/server-8.0.asc | sudo tee /etc/apt/trusted.gpg.d/server-8.0.asc
-              echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
-
-              # curl -fsSL https://pgp.mongodb.com/server-7.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
-              # echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
-
-              sudo apt update -y
-              sudo apt-get install -y mongodb-atlas
-              wget https://downloads.mongodb.com/compass/mongodb-compass_1.44.5_amd64.deb
-              sudo apt install ./mongodb-compass_1.44.5_amd64.deb
-              mkdir -p -m 0755 /home/ubuntu/Desktop
-              chown ubuntu:ubuntu /home/ubuntu/Desktop
-              echo -e "[Desktop Entry]\nVersion=1.0\nType=Application\nName=MongoDB Compass\nComment=The MongoDB GUI\nExec=mongodb-compass %U\nIcon=mongodb-compass\nPath=\nTerminal=false\nStartupNotify=true"  | tee "/usr/share/applications/MongoDB Compass.desktop"
-              ln -s "/usr/share/applications/MongoDB Compass.desktop" "/home/ubuntu/Desktop/MongoDB Compass.desktop"
-              # chown ubuntu:ubuntu "/home/ubuntu/Desktop/MongoDB Compass.desktop"
-              # gio set -t string "/home/ubuntu/Desktop/MongoDB Compass.dekstop" metadata::xfce-exe-checksum "$(sha256sum "/home/ubuntu/Desktop/MongoDB Compass.dekstop"} | awk '{print $1}')"
-              echo "ubuntu:${random_string.password[count.index].result}" | sudo chpasswd
-
-              EOF
+  user_data = templatefile("files/setup.sh.tftpl", { password = random_string.password[count.index].result} )
 
   tags = {
     owner = var.owner
@@ -275,10 +161,3 @@ output "instance_paswords" {
   value = random_string.password[*].result
 }
 
-output "s3_bucket" {
-  value = aws_s3_bucket.config_bucket
-}
-
-output "s3_object" {
-  value = aws_s3_object.jumphost_setup
-}

@@ -22,4 +22,4 @@ echo -e "[Desktop Entry]\nVersion=1.0\nType=Application\nName=MongoDB Compass\nC
 ln -s "/usr/share/applications/MongoDB Compass.desktop" "/home/ubuntu/Desktop/MongoDB Compass.desktop"
 # chown ubuntu:ubuntu "/home/ubuntu/Desktop/MongoDB Compass.desktop"
 # gio set -t string "/home/ubuntu/Desktop/MongoDB Compass.dekstop" metadata::xfce-exe-checksum "$(sha256sum "/home/ubuntu/Desktop/MongoDB Compass.dekstop"} | awk '{print $1}')"
-echo "ubuntu:Temp1234!" | sudo chpasswd
+echo 'ubuntu:${password}' | tee /tmp/password_change | sudo chpasswd
