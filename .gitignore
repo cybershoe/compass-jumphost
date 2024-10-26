@@ -1,9 +1,8 @@
 .env
 .terraform/
-.terraform.lock.hcl
 .terraform*
 *.tfstate
 *.tfstate.backup
 core
 .ssh/
-vars.tf
+terraform.tfvars
