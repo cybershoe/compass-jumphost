@@ -18,6 +18,7 @@ mkdir -p -m 0755 /home/ubuntu/Desktop
 chown ubuntu:ubuntu /home/ubuntu/Desktop
 echo -e "[Desktop Entry]\nVersion=1.0\nType=Application\nName=MongoDB Compass\nComment=The MongoDB GUI\nExec=mongodb-compass %U\nIcon=mongodb-compass\nPath=\nTerminal=false\nStartupNotify=true"  | tee "/usr/share/applications/MongoDB Compass.desktop"
 ln -s "/usr/share/applications/MongoDB Compass.desktop" "/home/ubuntu/Desktop/MongoDB Compass.desktop"
+ln -s "/usr/share/applications/chromium-browser.desktop" "/home/ubuntu/Desktop/chromium-browser.desktop"
 
 snap install --classic certbot
 
@@ -31,7 +32,8 @@ SALT="$(openssl rand -hex 32 | tr '[:lower:]' '[:upper:]')"
 PASS='${password}'
 HASH="$(echo -en "$PASS$SALT" | sha256sum | sed 's/ .*$//')"
 
-echo >> init/initdb.sql "INSERT INTO guacamole_connection (connection_id, connection_name, protocol, failover_only) VALUES (1, 'Jumphost RDP', 'rdp', 'f');
+cat >> init/initdb.sql <<EOF
+INSERT INTO guacamole_connection (connection_id, connection_name, protocol, failover_only) VALUES (1, 'Jumphost RDP', 'rdp', 'f');
 INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES (1, 'password', '$PASS');
 INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES (1, 'hostname', '172.18.0.1');
 INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES (1, 'username', 'ubuntu');
@@ -41,7 +43,8 @@ INSERT INTO guacamole_connection_permission (entity_id, connection_id, permissio
 INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'UPDATE');
 INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'DELETE');
 INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'ADMINISTER');
-INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (2, 1, 'READ');"
+INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (2, 1, 'READ');
+EOF
 
 sed -i "s/8443:/443:/" docker-compose.yml
 
@@ -50,5 +53,57 @@ cp /etc/letsencrypt/live/${hostname}.${domain}/privkey.pem /guacamole-docker-com
 cp /etc/letsencrypt/live/${hostname}.${domain}/fullchain.pem /guacamole-docker-compose/nginx/ssl/self.cert
 
 docker-compose up -d
+
+sed -i '/<property name="LockCommand" type="string" value=""\//a\    <property name="SaveOnExit" type="bool" value="false"\/>' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml
+# 
+
+cat > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml <<EOF
+<?xml version="1.0" encoding="UTF-8"?> 
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="screen0" type="empty">
+      <property name="monitorrdp0" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="image-style" type="int" value="0"/>
+        </property>  
+        <property name="workspace1" type="empty">
+          <property name="image-style" type="int" value="0"/>
+        </property>  
+        <property name="workspace2" type="empty">
+          <property name="image-style" type="int" value="0"/>
+        </property>  
+        <property name="workspace3" type="empty">
+          <property name="image-style" type="int" value="0"/>
+        </property>  
+      </property>  
+    </property>
+  </property>
+</channel>
+EOF
+
+cat > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml <<EOF
+<?xml version="1.0" encoding="UTF-8"?> 
+<channel name="xfwm4" version="1.0">
+  <property name="general" type="empty">
+    <property name="box_move" type="bool" value="true"/>
+    <property name="box_resize" type="bool" value="true"/>
+  </property>
+</channel>
+EOF
+
+mkdir -p /home/ubuntu/.local/share/keyrings/
+echo -n "Default_keyring" > /home/ubuntu/.local/share/keyrings/default
+cat > /home/ubuntu/.local/share/keyrings/Default_keyring.keyring << EOF 
+[keyring]
+display-name=Default keyring
+ctime=0
+mtime=0
+lock-on-idle=false
+lock-after=false
+EOF
+chmod og= /home/ubuntu/.local/share/keyrings/
+chmod og= /home/ubuntu/.local/share/keyrings/Default_keyring.keyring
+chown -R ubuntu:ubuntu /home/ubuntu/.local
+
 
 echo "ubuntu:$PASS" | tee /tmp/password_change | sudo chpasswd
