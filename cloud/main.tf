@@ -15,7 +15,7 @@ provider "aws" {
 }
 
 resource "aws_key_pair" "deployment_keypair" {
-  key_name   = "ubuntu_ssh_key"
+  key_name   = "jumphost_ssh_key"
   public_key = var.public_key_openssh
 }
 

@@ -2,15 +2,11 @@
 
 sudo apt update -y
 
-sudo apt install xfce4 xfce4-goodies gnupg chromium-browser -y
-sudo apt install xrdp -y
+sudo apt install xfce4 xfce4-goodies gnupg chromium-browser git docker-compose xrdp -y
 sudo update-alternatives --set x-session-manager /usr/bin/startxfce4
 
 wget -qO- https://www.mongodb.org/static/pgp/server-8.0.asc | sudo tee /etc/apt/trusted.gpg.d/server-8.0.asc
 echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
-
-# curl -fsSL https://pgp.mongodb.com/server-7.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
-# echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
 
 sudo apt update -y
 sudo apt-get install -y mongodb-atlas
@@ -20,6 +16,27 @@ mkdir -p -m 0755 /home/ubuntu/Desktop
 chown ubuntu:ubuntu /home/ubuntu/Desktop
 echo -e "[Desktop Entry]\nVersion=1.0\nType=Application\nName=MongoDB Compass\nComment=The MongoDB GUI\nExec=mongodb-compass %U\nIcon=mongodb-compass\nPath=\nTerminal=false\nStartupNotify=true"  | tee "/usr/share/applications/MongoDB Compass.desktop"
 ln -s "/usr/share/applications/MongoDB Compass.desktop" "/home/ubuntu/Desktop/MongoDB Compass.desktop"
-# chown ubuntu:ubuntu "/home/ubuntu/Desktop/MongoDB Compass.desktop"
-# gio set -t string "/home/ubuntu/Desktop/MongoDB Compass.dekstop" metadata::xfce-exe-checksum "$(sha256sum "/home/ubuntu/Desktop/MongoDB Compass.dekstop"} | awk '{print $1}')"
-echo 'ubuntu:${password}' | tee /tmp/password_change | sudo chpasswd
+
+
+
+git clone "https://github.com/boschkundendienst/guacamole-docker-compose.git"
+cd guacamole-docker-compose
+./prepare.sh
+SALT="$(openssl rand -hex 32 | tr '[:lower:]' '[:upper:]')"
+PASS='${password}'
+HASH="$(echo -en "$PASS$SALT" | sha256sum | sed 's/ .*$//')"
+
+echo >> init/initdb.sql "INSERT INTO guacamole_connection (connection_id, connection_name, protocol, failover_only) VALUES (1, 'Jumphost RDP', 'rdp', 'f');
+INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES (1, 'password', '$PASS');
+INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES (1, 'hostname', '172.18.0.1');
+INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES (1, 'username', 'ubuntu');
+INSERT INTO guacamole_entity (entity_id, name, type) VALUES (2, 'jhuser', 'USER');
+INSERT INTO guacamole_user (user_id, entity_id, password_hash, password_salt, password_date) VALUES (2, 2, decode('$HASH', 'hex'), decode('$SALT', 'hex'), '$(date +"%Y-%m-%d %T.%3N%3z")');
+INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'READ');
+INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'UPDATE');
+INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'DELETE');
+INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'ADMINISTER');
+INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (2, 1, 'READ');"
+docker-compose up -d
+
+echo "ubuntu:$PASS" | tee /tmp/password_change | sudo chpasswd

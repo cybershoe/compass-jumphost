@@ -1,0 +1,11 @@
+INSERT INTO guacamole_connection (connection_id, connection_name, protocol, failover_only) VALUES (1, 'Jumphost RDP', 'rdp', 'f');
+INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES (1, 'password', 'Temp123!');
+INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES (1, 'hostname', '172.18.0.1');
+INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES (1, 'username', 'ubuntu');
+INSERT INTO guacamole_entity (entity_id, name, type) VALUES (2, 'jhuser', 'USER');
+INSERT INTO guacamole_user (user_id, entity_id, password_hash, password_salt, password_date) VALUES (2, 2, decode('d19bc9910ccbee3220e107204a402167bc36e1623beeee37887f6cd264ac883c', 'hex'), decode('D400D52CAF6D5096DF5A153078901BFF9C5CFDCD764AA9E45C1C7458AE9690B3', 'hex'), '2024-10-28 17:57:25.285+00');
+INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'READ');
+INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'UPDATE');
+INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'DELETE');
+INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'ADMINISTER');
+INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (2, 1, 'READ');

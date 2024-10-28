@@ -30,6 +30,13 @@ resource "aws_security_group" "allow_ssh_rdp" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+ingress {
+  from_port   = 8443
+  to_port     = 8443
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -68,6 +75,7 @@ resource "aws_instance" "ubuntu_instance" {
   # ]
 
   user_data = templatefile("${path.module}/files/setup.sh.tftpl", { password = random_string.password[count.index].result} )
+  user_data_replace_on_change = true
 
   tags = merge(var.tags, {
     Name = "${var.prefix}-${format("jumphost-%03d", count.index + 1)}"
