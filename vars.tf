@@ -24,6 +24,17 @@ variable prefix {
     default = "default"
 }
 
+variable ddns_domain {
+    description = "Domain for dynamic DNS updates"
+    type = string
+}
+
+variable ddns_password {
+    description = "Password for dynamic DNS updates"
+    type = string
+    sensitive = true
+}
+
 variable jumphost_instance_type {
     description = "Instance type for jumphosts"
     type = string

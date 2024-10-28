@@ -1,5 +1,7 @@
 #!/bin/bash
 
+curl "https://dynamicdns.park-your-domain.com/update?host=${hostname}&domain=${domain}&password=${ddns_pass}&ip=$(curl -s http://checkip.amazonaws.com)"
+
 sudo apt update -y
 
 sudo apt install xfce4 xfce4-goodies gnupg chromium-browser git docker-compose xrdp -y
@@ -17,6 +19,9 @@ chown ubuntu:ubuntu /home/ubuntu/Desktop
 echo -e "[Desktop Entry]\nVersion=1.0\nType=Application\nName=MongoDB Compass\nComment=The MongoDB GUI\nExec=mongodb-compass %U\nIcon=mongodb-compass\nPath=\nTerminal=false\nStartupNotify=true"  | tee "/usr/share/applications/MongoDB Compass.desktop"
 ln -s "/usr/share/applications/MongoDB Compass.desktop" "/home/ubuntu/Desktop/MongoDB Compass.desktop"
 
+snap install --classic certbot
+
+
 
 
 git clone "https://github.com/boschkundendienst/guacamole-docker-compose.git"
@@ -30,13 +35,20 @@ echo >> init/initdb.sql "INSERT INTO guacamole_connection (connection_id, connec
 INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES (1, 'password', '$PASS');
 INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES (1, 'hostname', '172.18.0.1');
 INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES (1, 'username', 'ubuntu');
-INSERT INTO guacamole_entity (entity_id, name, type) VALUES (2, 'jhuser', 'USER');
+INSERT INTO guacamole_entity (entity_id, name, type) VALUES (2, '${username}', 'USER');
 INSERT INTO guacamole_user (user_id, entity_id, password_hash, password_salt, password_date) VALUES (2, 2, decode('$HASH', 'hex'), decode('$SALT', 'hex'), '$(date +"%Y-%m-%d %T.%3N%3z")');
 INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'READ');
 INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'UPDATE');
 INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'DELETE');
 INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (1, 1, 'ADMINISTER');
 INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (2, 1, 'READ');"
+
+sed -i "s/8443:/443:/" docker-compose.yml
+
+certbot certonly --standalone --preferred-challenges http-01 -d ${hostname}.${domain} --non-interactive --agree-tos -m webmaster@${domain}
+cp /etc/letsencrypt/live/${hostname}.${domain}/privkey.pem /guacamole-docker-compose/nginx/ssl/self-ssl.key
+cp /etc/letsencrypt/live/${hostname}.${domain}/fullchain.pem /guacamole-docker-compose/nginx/ssl/self.cert
+
 docker-compose up -d
 
 echo "ubuntu:$PASS" | tee /tmp/password_change | sudo chpasswd

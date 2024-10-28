@@ -36,6 +36,8 @@ module "jumphost" {
   subnet_id = module.cloud.public_subnet_id
   keypair_name = module.cloud.keypair_name
   instance_type = var.jumphost_instance_type
+  ddns_domain = var.ddns_domain
+  ddns_password = var.ddns_password
 }
 
 resource "tls_private_key" "ssh_key" {

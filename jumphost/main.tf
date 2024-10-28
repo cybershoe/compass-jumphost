@@ -31,13 +31,20 @@ resource "aws_security_group" "allow_ssh_rdp" {
   }
 
 ingress {
-  from_port   = 8443
-  to_port     = 8443
+  from_port   = 443
+  to_port     = 443
   protocol    = "tcp"
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-  egress {
+ingress {
+  from_port   = 80
+  to_port     = 80
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
+egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -69,12 +76,13 @@ resource "aws_instance" "ubuntu_instance" {
   key_name                    = var.keypair_name
   associate_public_ip_address = true
 
-  # depends_on = [
-  #   aws_security_group.allow_ssh_rdp,
-  #   aws_internet_gateway.igw
-  # ]
-
-  user_data = templatefile("${path.module}/files/setup.sh.tftpl", { password = random_string.password[count.index].result} )
+  user_data = templatefile("${path.module}/files/setup.sh.tftpl", { 
+    password = random_string.password[count.index].result,
+    hostname = "${format("jumphost%03d", count.index + 1)}",
+    domain = var.ddns_domain,
+    ddns_pass = var.ddns_password,
+    username = "${format("user%03d", count.index + 1)}"
+  })
   user_data_replace_on_change = true
 
   tags = merge(var.tags, {
@@ -86,6 +94,8 @@ output instance_password_map {
   value = [
     for i in range(var.replicas) : {
       ip = aws_instance.ubuntu_instance[i].public_ip
+      url = "https://${format("jumphost%03d", i + 1)}.${var.ddns_domain}/"
+      username = "${format("user%03d", i + 1)}"
       password = random_string.password[i].result
     }
   ]
