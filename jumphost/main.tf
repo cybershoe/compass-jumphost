@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.56"
     }
+    namecheap = {
+      source = "namecheap/namecheap"
+      version = ">= 2.0.0"
+    }
   }
 }
 
@@ -78,9 +82,9 @@ resource "aws_instance" "ubuntu_instance" {
 
   user_data = templatefile("${path.module}/files/setup.sh.tftpl", {
     password  = random_string.password[count.index].result,
-    hostname  = "${format("jumphost%03d", count.index + 1)}",
-    domain    = var.ddns_domain,
-    ddns_pass = var.ddns_password,
+    hostname  = "${var.prefix}${format("-%03d", count.index+1)}",
+    domain    = var.dns_domain,
+    # ddns_pass = var.ddns_password,
     username  = "${format("user%03d", count.index + 1)}",
     certbot_staging = var.certbot_staging ? "--test-cert " : ""
   })
@@ -91,11 +95,23 @@ resource "aws_instance" "ubuntu_instance" {
   })
 }
 
+resource "namecheap_domain_records" "instance_dns_name" {
+  count  = var.replicas
+  domain = var.dns_domain
+
+  record { 
+    hostname = "${var.prefix}${format("-%03d", count.index+1)}"
+    type     = "A"
+    address  = aws_instance.ubuntu_instance[count.index].public_ip
+    ttl      = 180
+  }
+}
+
 output "instance_password_map" {
   value = [
     for i in range(var.replicas) : {
       ip       = aws_instance.ubuntu_instance[i].public_ip
-      url      = "https://${format("jumphost%03d", i + 1)}.${var.ddns_domain}/"
+      url      = "https://${var.prefix}${format("-%03d", i + 1)}.${var.dns_domain}/"
       username = "${format("user%03d", i + 1)}"
       password = random_string.password[i].result
     }

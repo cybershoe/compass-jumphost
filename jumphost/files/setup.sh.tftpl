@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Register hostname with ddns.
-curl "https://dynamicdns.park-your-domain.com/update?host=${hostname}&domain=${domain}&password=${ddns_pass}&ip=$(curl -s http://checkip.amazonaws.com)"
-
 # Add MongoDB repository
 wget -qO- https://www.mongodb.org/static/pgp/server-8.0.asc | sudo tee /etc/apt/trusted.gpg.d/server-8.0.asc
 echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
@@ -18,12 +15,16 @@ sudo apt install ./mongodb-compass_1.44.5_amd64.deb
 # Install Certbot
 snap install --classic certbot
 
-# Install Guacamole
+#######################
+## Install Guacamole ##
+#######################
+
+# Get docker-compose for guacamole
 git clone "https://github.com/boschkundendienst/guacamole-docker-compose.git"
 cd guacamole-docker-compose
 ./prepare.sh
 
-# Generate salted has for user password
+# Generate salted hash for user password
 SALT="$(openssl rand -hex 32 | tr '[:lower:]' '[:upper:]')"
 PASS='${password}'
 HASH="$(echo -en "$PASS$SALT" | sha256sum | sed 's/ .*$//')"
@@ -50,12 +51,17 @@ EOF
 sed -i "s/8443:/443:/" docker-compose.yml
 
 # Retrieve Let's Encrypt cert
-certbot certonly --standalone --preferred-challenges http-01 -d ${hostname}.${domain} ${certbot_staging}--non-interactive --agree-tos -m webmaster@${domain}
+for i in {1..5}; do certbot certonly --standalone --preferred-challenges http-01 -d ${hostname}.${domain} ${certbot_staging}--non-interactive --agree-tos -m webmaster@${domain} && break || sleep 15; done 
+
 cp /etc/letsencrypt/live/${hostname}.${domain}/privkey.pem /guacamole-docker-compose/nginx/ssl/self-ssl.key
 cp /etc/letsencrypt/live/${hostname}.${domain}/fullchain.pem /guacamole-docker-compose/nginx/ssl/self.cert
 
 # Start Guacamole
 docker-compose up -d
+
+#####################################
+## Desktop Setup and Optimizations ##
+#####################################
 
 # Enable XFCE
 sudo update-alternatives --set x-session-manager /usr/bin/startxfce4

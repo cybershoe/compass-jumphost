@@ -11,18 +11,25 @@ Setup
   - `owner`, `purpose`, and `expires` tags for Cloud Custodian
   - `prefix` prepended to created resources
   - `instance_type` and desired number of `replicas`
-  - `ddns_domain` name for dynamic DNS updates
+  - `dns_domain` name for programmatic DNS record creation
 
-- Additionally, set `certbot_staging` to `true` for test deployments in order
-  to avoid triggering the Let's Encrypt rate limit of 5 certificates per 
-  hostname per week.
+> [!TIP]
+> Set `certbot_staging` to `true` for test deployments in order to avoid
+> triggering the Let's Encrypt rate limit of 5 certificates per hostname 
+> per week.
 
 - Set your environment:
 ```
 export AWS_ACCESS_KEY_ID="MyAwsAccessKeyID"
 export AWS_SECRET_ACCESS_KEY="MySuperSecretAndVerySecureAWSSecretAccessKey"
-export TF_VAR_ddns_password="MyDynamicDnsUpdatePassword"
+export NAMECHEAP_USER_NAME="MyNamecheapUsername"
+export NAMECHEAP_API_USER="MyNamecheapUsername"
+export NAMECHEAP_API_KEY="MyNamecheapAPIkey"
+
 ```
+
+> [!IMPORTANT]
+> Remember to add the egress IP of your terraform/tofu runner to the Namecheap API IP whitelist
 
 - Deploy to AWS:
 ```
@@ -54,8 +61,11 @@ credentials = [
 
 Connecting
 ----------
-Environment setup takes a few minutes. Once Guacamole has started, browse to the
-"url" property of a jumphost, and log in with the supplied credentials.
+> [!NOTE]
+> Environment setup can take 5-10 (ish) depending on instance size,
+> resource contention, and the phase of the moon. 
+
+Once Guacamole has started, browse to the "url" property of a jumphost, and log in with the supplied credentials.
 
 Teardown
 --------
