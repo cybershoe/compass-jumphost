@@ -19,8 +19,7 @@ Setup
   - `region`, defaults to `us-east-1`
   - `availability_zone`, defaults to `us-east-1a`
   - `lab_guide_url`, defaults to a placeholder PDF
-
-
+  - `certbot_staging`, defaults to `false`
 
 > [!TIP]
 > Set `certbot_staging` to `true` for test deployments in order to avoid
