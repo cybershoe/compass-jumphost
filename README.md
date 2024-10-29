@@ -14,7 +14,7 @@ Setup
   - `dns_domain` name for programmatic DNS record creation
   #### Optional Variables:
   - `instance_type`, defaults to `t3.small`. `t3.medium` or highter will
-    result in a better user experience at the cost of increasted cost.
+    result in a better user experience in exchange for higher cost.
   - `replicas`, defaults to `1`
   - `region`, defaults to `us-east-1`
   - `availability_zone`, defaults to `us-east-1a`
