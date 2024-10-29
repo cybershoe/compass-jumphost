@@ -1,37 +1,34 @@
 #!/bin/bash
 
+# Register hostname with ddns.
 curl "https://dynamicdns.park-your-domain.com/update?host=${hostname}&domain=${domain}&password=${ddns_pass}&ip=$(curl -s http://checkip.amazonaws.com)"
 
-sudo apt update -y
-
-sudo apt install xfce4 xfce4-goodies gnupg chromium-browser git docker-compose xrdp -y
-sudo update-alternatives --set x-session-manager /usr/bin/startxfce4
-
+# Add MongoDB repository
 wget -qO- https://www.mongodb.org/static/pgp/server-8.0.asc | sudo tee /etc/apt/trusted.gpg.d/server-8.0.asc
 echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
 
+# Install required packages
 sudo apt update -y
-sudo apt-get install -y mongodb-atlas
+sudo apt install xfce4 xfce4-goodies gnupg chromium-browser git docker-compose xrdp mongodb-atlas -y
+
+# Install MongoDB Compass
 wget https://downloads.mongodb.com/compass/mongodb-compass_1.44.5_amd64.deb
 sudo apt install ./mongodb-compass_1.44.5_amd64.deb
-mkdir -p -m 0755 /home/ubuntu/Desktop
-chown ubuntu:ubuntu /home/ubuntu/Desktop
-echo -e "[Desktop Entry]\nVersion=1.0\nType=Application\nName=MongoDB Compass\nComment=The MongoDB GUI\nExec=mongodb-compass %U\nIcon=mongodb-compass\nPath=\nTerminal=false\nStartupNotify=true"  | tee "/usr/share/applications/MongoDB Compass.desktop"
-ln -s "/usr/share/applications/MongoDB Compass.desktop" "/home/ubuntu/Desktop/MongoDB Compass.desktop"
-ln -s "/usr/share/applications/chromium-browser.desktop" "/home/ubuntu/Desktop/chromium-browser.desktop"
 
+# Install Certbot
 snap install --classic certbot
 
-
-
-
+# Install Guacamole
 git clone "https://github.com/boschkundendienst/guacamole-docker-compose.git"
 cd guacamole-docker-compose
 ./prepare.sh
+
+# Generate salted has for user password
 SALT="$(openssl rand -hex 32 | tr '[:lower:]' '[:upper:]')"
 PASS='${password}'
 HASH="$(echo -en "$PASS$SALT" | sha256sum | sed 's/ .*$//')"
 
+# Add user and connection details to Postgres init script
 cat >> init/initdb.sql <<EOF
 INSERT INTO guacamole_connection (connection_id, connection_name, protocol, failover_only) VALUES (1, 'Jumphost RDP', 'rdp', 'f');
 INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES (1, 'password', '$PASS');
@@ -46,17 +43,24 @@ INSERT INTO guacamole_connection_permission (entity_id, connection_id, permissio
 INSERT INTO guacamole_connection_permission (entity_id, connection_id, permission) VALUES (2, 1, 'READ');
 EOF
 
+# Change Guacamole NGINX to port 443
 sed -i "s/8443:/443:/" docker-compose.yml
 
+# Retrieve Let's Encrypt cert
 certbot certonly --standalone --preferred-challenges http-01 -d ${hostname}.${domain} --non-interactive --agree-tos -m webmaster@${domain}
 cp /etc/letsencrypt/live/${hostname}.${domain}/privkey.pem /guacamole-docker-compose/nginx/ssl/self-ssl.key
 cp /etc/letsencrypt/live/${hostname}.${domain}/fullchain.pem /guacamole-docker-compose/nginx/ssl/self.cert
 
+# Start Guacamole
 docker-compose up -d
 
-sed -i '/<property name="LockCommand" type="string" value=""\//a\    <property name="SaveOnExit" type="bool" value="false"\/>' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml
-# 
+# Enable XFCE
+sudo update-alternatives --set x-session-manager /usr/bin/startxfce4
 
+# Disable session save on exit
+sed -i '/<property name="LockCommand" type="string" value=""\//a\    <property name="SaveOnExit" type="bool" value="false"\/>' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml
+
+# Set desktop background to blank (bandwidth saving)
 cat > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml <<EOF
 <?xml version="1.0" encoding="UTF-8"?> 
 <channel name="xfce4-desktop" version="1.0">
@@ -81,6 +85,7 @@ cat > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml <<EOF
 </channel>
 EOF
 
+# Hide window contents on move and resize (bandwidth saving)
 cat > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml <<EOF
 <?xml version="1.0" encoding="UTF-8"?> 
 <channel name="xfwm4" version="1.0">
@@ -91,6 +96,7 @@ cat > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml <<EOF
 </channel>
 EOF
 
+# Create keyring with null password to suppress prompts
 mkdir -p /home/ubuntu/.local/share/keyrings/
 echo -n "Default_keyring" > /home/ubuntu/.local/share/keyrings/default
 cat > /home/ubuntu/.local/share/keyrings/Default_keyring.keyring << EOF 
@@ -105,5 +111,12 @@ chmod og= /home/ubuntu/.local/share/keyrings/
 chmod og= /home/ubuntu/.local/share/keyrings/Default_keyring.keyring
 chown -R ubuntu:ubuntu /home/ubuntu/.local
 
+# Pre-populate desktop with chromium and MongoDB Compass icons
+mkdir -p -m 0755 /home/ubuntu/Desktop
+chown ubuntu:ubuntu /home/ubuntu/Desktop
+echo -e "[Desktop Entry]\nVersion=1.0\nType=Application\nName=MongoDB Compass\nComment=The MongoDB GUI\nExec=mongodb-compass %U\nIcon=mongodb-compass\nPath=\nTerminal=false\nStartupNotify=true"  | tee "/usr/share/applications/MongoDB Compass.desktop"
+ln -s "/usr/share/applications/MongoDB Compass.desktop" "/home/ubuntu/Desktop/MongoDB Compass.desktop"
+ln -s "/usr/share/applications/chromium-browser.desktop" "/home/ubuntu/Desktop/chromium-browser.desktop"
 
+# Set user password
 echo "ubuntu:$PASS" | tee /tmp/password_change | sudo chpasswd

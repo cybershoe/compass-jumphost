@@ -7,7 +7,7 @@ terraform {
       version = "~> 5.56"
     }
   }
-}   
+}
 
 
 provider "aws" {
@@ -28,7 +28,7 @@ resource "aws_vpc" "vpc" {
 
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
-  tags = merge (var.tags, {
+  tags = merge(var.tags, {
     Name = "${var.prefix}-jumphosts-igw"
   })
 }
@@ -59,14 +59,14 @@ resource "aws_route_table_association" "public_rt_association" {
   route_table_id = aws_route_table.public_rt.id
 }
 
-output keypair_name {
-    value = aws_key_pair.deployment_keypair.key_name
+output "keypair_name" {
+  value = aws_key_pair.deployment_keypair.key_name
 }
 
-output vpc_id {
-    value = aws_vpc.vpc.id
+output "vpc_id" {
+  value = aws_vpc.vpc.id
 }
 
-output public_subnet_id {
-    value = aws_subnet.public_subnet.id
+output "public_subnet_id" {
+  value = aws_subnet.public_subnet.id
 }
