@@ -1,0 +1,18 @@
+{
+
+        "guacamoleVersion" : "*",
+        "name" : "Branding",
+        "namespace" : "brandingnamespace",
+        "translations" : [ 
+		"translations/en.json"
+	 ],
+
+	 "css" : [
+                "css/login-override.css"
+         ],
+
+	 "resources" : {
+                "images/logo.png" : "image/png"
+         }
+}
+
