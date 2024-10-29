@@ -63,3 +63,9 @@ variable "availability_zone" {
   type        = string
   default     = "us-east-1a"
 }
+
+variable "certbot_staging" {
+  description = "Set to true to use the staging Let's Encrypt environment"
+  type        = bool
+  default     = false
+}

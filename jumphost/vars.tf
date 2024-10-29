@@ -47,3 +47,8 @@ variable "subnet_id" {
 variable "keypair_name" {
   description = "ssh key pair for jumphosts"
 }
+
+variable "certbot_staging" {
+  description = "Set to true to use the staging Let's Encrypt environment"
+  type        = bool
+}

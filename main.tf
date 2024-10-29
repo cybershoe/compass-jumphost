@@ -27,18 +27,19 @@ module "cloud" {
 }
 
 module "jumphost" {
-  source        = "./jumphost"
-  tags          = local.tags
-  prefix        = var.prefix
-  region        = var.region
-  replicas      = var.replicas
-  vpc_id        = module.cloud.vpc_id
-  subnet_id     = module.cloud.public_subnet_id
-  keypair_name  = module.cloud.keypair_name
-  instance_type = var.instance_type
-  ami_id        = var.ami_id
-  ddns_domain   = var.ddns_domain
-  ddns_password = var.ddns_password
+  source          = "./jumphost"
+  tags            = local.tags
+  prefix          = var.prefix
+  region          = var.region
+  replicas        = var.replicas
+  vpc_id          = module.cloud.vpc_id
+  subnet_id       = module.cloud.public_subnet_id
+  keypair_name    = module.cloud.keypair_name
+  instance_type   = var.instance_type
+  ami_id          = var.ami_id
+  ddns_domain     = var.ddns_domain
+  ddns_password   = var.ddns_password
+  certbot_staging = var.certbot_staging
 }
 
 resource "tls_private_key" "ssh_key" {

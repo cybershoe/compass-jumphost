@@ -81,7 +81,8 @@ resource "aws_instance" "ubuntu_instance" {
     hostname  = "${format("jumphost%03d", count.index + 1)}",
     domain    = var.ddns_domain,
     ddns_pass = var.ddns_password,
-    username  = "${format("user%03d", count.index + 1)}"
+    username  = "${format("user%03d", count.index + 1)}",
+    certbot_staging = var.certbot_staging ? "--test-cert " : ""
   })
   user_data_replace_on_change = true
 

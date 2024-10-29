@@ -13,6 +13,10 @@ Setup
   - `instance_type` and desired number of `replicas`
   - `ddns_domain` name for dynamic DNS updates
 
+- Additionally, set `certbot_staging` to `true` for test deployments in order
+  to avoid triggering the Let's Encrypt rate limit of 5 certificates per 
+  hostname per week.
+
 - Set your environment:
 ```
 export AWS_ACCESS_KEY_ID="MyAwsAccessKeyID"
