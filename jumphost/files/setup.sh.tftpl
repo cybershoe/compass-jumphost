@@ -28,6 +28,7 @@ cd guacamole-docker-compose
 mkdir -p guacamole_home/extensions
 wget -O guacamole_home/extensions/branding.jar ${branding_jar_url}
 sed -i '142i\      - ./guacamole_home:/guacamole_home:rw' docker-compose.yml 
+sed -i '136i\      GUACAMOLE_HOME: /guacamole_home' docker-compose.yml
 
 # Generate salted hash for user password
 SALT="$(openssl rand -hex 32 | tr '[:lower:]' '[:upper:]')"
