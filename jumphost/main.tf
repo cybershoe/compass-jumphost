@@ -27,13 +27,6 @@ resource "aws_security_group" "allow_ssh_rdp" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # ingress {
-  #   from_port   = 3389
-  #   to_port     = 3389
-  #   protocol    = "tcp"
-  #   cidr_blocks = ["0.0.0.0/0"]
-  # }
-
   ingress {
     from_port   = 443
     to_port     = 443
@@ -71,9 +64,24 @@ resource "random_string" "password" {
   override_special = "$#+@%^"
 }
 
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = [var.ami_pattern]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+  owners = ["099720109477"] # Canonical
+}
+
 resource "aws_instance" "ubuntu_instance" {
   count                       = var.replicas
-  ami                         = var.ami_id
+  ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [aws_security_group.allow_ssh_rdp.id]
@@ -81,11 +89,11 @@ resource "aws_instance" "ubuntu_instance" {
   associate_public_ip_address = true
 
   user_data = templatefile("${path.module}/files/setup.sh.tftpl", {
-    password  = random_string.password[count.index].result,
-    hostname  = "${var.prefix}${format("-%03d", count.index+1)}",
-    domain    = var.dns_domain,
-    # ddns_pass = var.ddns_password,
-    username  = "${format("user%03d", count.index + 1)}",
+    password        = random_string.password[count.index].result,
+    hostname        = "${var.prefix}${format("-%03d", count.index+1)}",
+    domain          = var.dns_domain,
+    lab_guide_url   = var.lab_guide_url,
+    username        = "${format("user%03d", count.index + 1)}",
     certbot_staging = var.certbot_staging ? "--test-cert " : ""
   })
   user_data_replace_on_change = true

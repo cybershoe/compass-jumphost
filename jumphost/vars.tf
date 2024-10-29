@@ -14,19 +14,13 @@ variable "region" {
   type = string
 }
 
-# variable "ddns_domain" {
-#   description = "Domain for dynamic DNS updates"
-#   type        = string
-# }
-
-# variable "ddns_password" {
-#   description = "Password for dynamic DNS updates"
-#   type        = string
-#   sensitive   = true
-# }
-
 variable "dns_domain" {
   description = "Domain for DNS records"
+  type        = string
+}
+
+variable "lab_guide_url" {
+  description = "URL to lab guide to place on desktop"
   type        = string
 }
 
@@ -35,8 +29,8 @@ variable "instance_type" {
   type        = string
 }
 
-variable "ami_id" {
-  description = "AMI id for jumphosts"
+variable "ami_pattern" {
+  description = "AMI search pattern for jumphosts"
   type        = string
 }
 

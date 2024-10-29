@@ -8,10 +8,19 @@ Setup
 -----
 
 - Copy terraform.tfvars.example to tfvars.tf and edit for your deployment:
+  #### Required Variables:
   - `owner`, `purpose`, and `expires` tags for Cloud Custodian
   - `prefix` prepended to created resources
-  - `instance_type` and desired number of `replicas`
   - `dns_domain` name for programmatic DNS record creation
+  #### Optional Variables:
+  - `instance_type`, defaults to `t3.small`. `t3.medium` or highter will
+    result in a better user experience at the cost of increasted cost.
+  - `replicas`, defaults to `1`
+  - `region`, defaults to `us-east-1`
+  - `availability_zone`, defaults to `us-east-1a`
+  - `lab_guide_url`, defaults to a placeholder PDF
+
+
 
 > [!TIP]
 > Set `certbot_staging` to `true` for test deployments in order to avoid
@@ -71,3 +80,8 @@ Teardown
 --------
 - `tofu destroy`
 
+Troubleshooting
+---------------
+
+SSH access to the jumphosts is available with the username `ubuntu`, using the
+RSA key located at `.ssh/terraform_rsa`

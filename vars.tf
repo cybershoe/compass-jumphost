@@ -24,21 +24,16 @@ variable "prefix" {
   default     = "default"
 }
 
-# variable "ddns_domain" {
-#   description = "Domain for dynamic DNS updates"
-#   type        = string
-# }
-
 variable "dns_domain" {
   description = "Domain for DNS records"
   type        = string
 }
 
-# variable "ddns_password" {
-#   description = "Password for dynamic DNS updates"
-#   type        = string
-#   sensitive   = true
-# }
+variable "lab_guide_url" {
+  description = "URL to lab guide to place on desktop"
+  type        = string
+  default     = "https://raw.githubusercontent.com/cybershoe/compass-jumphost/478027418e7f5bb2be3d41a26aba82b601f474ab/lab-guide.pdf"
+}
 
 variable "region" {
   description = "Region in which to deploy jumphosts"
@@ -46,10 +41,10 @@ variable "region" {
   default     = "us-east-1"
 }
 
-variable "ami_id" {
-  description = "AMI id for jumphosts"
+variable "ami_pattern" {
+  description = "AMI search pattern for jumphosts"
   type        = string
-  default     = "ami-0cad6ee50670e3d0e"
+  default     = "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"
 }
 
 variable "instance_type" {

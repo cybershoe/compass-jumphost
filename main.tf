@@ -36,10 +36,9 @@ module "jumphost" {
   subnet_id       = module.cloud.public_subnet_id
   keypair_name    = module.cloud.keypair_name
   instance_type   = var.instance_type
-  ami_id          = var.ami_id
+  ami_pattern     = var.ami_pattern
   dns_domain      = var.dns_domain
-  # ddns_domain     = var.ddns_domain
-  # ddns_password   = var.ddns_password
+  lab_guide_url   = var.lab_guide_url
   certbot_staging = var.certbot_staging
 }
 
