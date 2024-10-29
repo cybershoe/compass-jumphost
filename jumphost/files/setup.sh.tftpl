@@ -123,7 +123,6 @@ chown -R ubuntu:ubuntu /home/ubuntu/.local
 # Pre-populate desktop with chromium and MongoDB Compass icons
 mkdir -p -m 0755 /home/ubuntu/Desktop
 chown ubuntu:ubuntu /home/ubuntu/Desktop
-echo -e "[Desktop Entry]\nVersion=1.0\nType=Application\nName=MongoDB Compass\nComment=The MongoDB GUI\nExec=mongodb-compass %U\nIcon=mongodb-compass\nPath=\nTerminal=false\nStartupNotify=true"  | tee "/usr/share/applications/MongoDB Compass.desktop"
 
 cat > /usr/share/applications/MongoDB\ Compass.desktop <<EOF
 [Desktop Entry]
