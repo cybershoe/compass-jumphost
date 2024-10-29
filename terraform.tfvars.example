@@ -1,5 +1,7 @@
-owner       = "default.mcdefaultface"
-prefix      = "default"
-expires     = "1970-01-01"
-replicas    = 1
-ddns_domain = "lab-days.com"
+owner         = "default.mcdefaultface"
+purpose       = "other"
+expires       = "1970-01-01"
+prefix        = "default"
+instance_type = "t3.medium"
+replicas      = 1
+ddns_domain   = "my-lab-domain.com"

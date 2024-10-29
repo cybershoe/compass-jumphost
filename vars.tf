@@ -35,22 +35,27 @@ variable "ddns_password" {
   sensitive   = true
 }
 
-variable "jumphost_instance_type" {
+variable "region" {
+  description = "Region in which to deploy jumphosts"
+  type        = string
+  default     = "us-east-1"
+}
+
+variable "ami_id" {
+  description = "AMI id for jumphosts"
+  type        = string
+  default     = "ami-0cad6ee50670e3d0e"
+}
+
+variable "instance_type" {
   description = "Instance type for jumphosts"
   type        = string
-  default     = "t3.small"
 }
 
 variable "replicas" {
   description = "Number of jumphosts to deploy"
   type        = number
   default     = 1
-}
-
-variable "region" {
-  description = "Region in which to deploy jumphosts"
-  type        = string
-  default     = "us-east-1"
 }
 
 variable "availability_zone" {

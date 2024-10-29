@@ -100,13 +100,3 @@ output "instance_password_map" {
     }
   ]
 }
-
-output "instance_public_ips" {
-  value = aws_instance.ubuntu_instance[*].public_ip
-
-}
-
-output "instance_paswords" {
-  value = random_string.password[*].result
-}
-

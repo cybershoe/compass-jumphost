@@ -33,7 +33,6 @@ variable "instance_type" {
 variable "ami_id" {
   description = "AMI id for jumphosts"
   type        = string
-  default     = "ami-0cad6ee50670e3d0e"
 }
 
 variable "vpc_id" {

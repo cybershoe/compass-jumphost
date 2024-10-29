@@ -1,35 +1,57 @@
 compass-jumphost
 ================
 
-Ubuntu Jumphosts with MongoDB Compass, mongosh, and atlas-cli installed.
+Ubuntu Jumphosts with Apache Guacamole installed for in-browser access to 
+MongoDB Compass, mongosh, and atlas-cli in locked-down environments.
 
 Setup
 -----
 
-- Copy tfvars.tf.example to tfvars.tf
-- Edit tfvars.tf with tagging data and desired number of replicas
-- Add AWS credentials to the environment
+- Copy terraform.tfvars.example to tfvars.tf and edit for your deployment:
+  - `owner`, `purpose`, and `expires` tags for Cloud Custodian
+  - `prefix` prepended to created resources
+  - `instance_type` and desired number of `replicas`
+  - `ddns_domain` name for dynamic DNS updates
+
+- Set your environment:
+```
+export AWS_ACCESS_KEY_ID="MyAwsAccessKeyID"
+export AWS_SECRET_ACCESS_KEY="MySuperSecretAndVerySecureAWSSecretAccessKey"
+export TF_VAR_ddns_password="MyDynamicDnsUpdatePassword"
+```
+
 - Deploy to AWS:
-    - `tofu init`
-    - `tofu plan`
-    - `tofu apply`
+```
+tofu init
+tofu plan
+tofu apply
+```
 
 Outputs
 -------
 
-Passwords and instance public IPs are output in two ordered lists.
+**credentials:** List of HCL objects with connection details and credentials for each jumphost. e.g.:
+```
+credentials = [
+  {
+    "ip" = "1.1.1.1"
+    "password" = "S00perSekrit"
+    "url" = "https://jumphost001.example.com/"
+    "username" = "user001"
+  },
+  {
+    "ip" = "1.1.1.2"
+    "password" = "sw0rdF1$h"
+    "url" = "https://jumphost002.example.com/"
+    "username" = "user002"
+  },
+]
+```
 
 Connecting
 ----------
-Environment setup takes a few minutes. Once xrdp has started, RDP to the
-instance IP with the username `ubuntu` and the corresponding password
-
-Notes
------
-
-- Upon opening MongoDB Compass or Chromium, the user will be prompted to set a
-  password for the user's login keychain. The keychain password can be set to
-  blank to prevent future prompts.
+Environment setup takes a few minutes. Once Guacamole has started, browse to the
+"url" property of a jumphost, and log in with the supplied credentials.
 
 Teardown
 --------
