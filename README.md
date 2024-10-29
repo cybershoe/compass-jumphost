@@ -71,7 +71,7 @@ credentials = [
 Connecting
 ----------
 > [!NOTE]
-> Environment setup can take 5-10 (ish) depending on instance size,
+> Environment setup can take 5-10 (ish) minutes depending on instance size,
 > resource contention, and the phase of the moon. 
 
 Once Guacamole has started, browse to the "url" property of a jumphost, and log in with the supplied credentials.
