@@ -35,6 +35,12 @@ variable "lab_guide_url" {
   default     = "https://raw.githubusercontent.com/cybershoe/compass-jumphost/478027418e7f5bb2be3d41a26aba82b601f474ab/lab-guide.pdf"
 }
 
+variable "branding_jar_url" {
+  description = "URL for guacamole branding.jar"
+  type        = string
+  default     = "https://github.com/cybershoe/compass-jumphost/raw/refs/heads/main/branding/branding.jar"
+}
+
 variable "region" {
   description = "Region in which to deploy jumphosts"
   type        = string

@@ -24,6 +24,11 @@ variable "lab_guide_url" {
   type        = string
 }
 
+variable "branding_jar_url" {
+  description = "URL for guacamole branding.jar"
+  type        = string
+}
+
 variable "instance_type" {
   description = "Instance type for jumphosts"
   type        = string

@@ -26,7 +26,7 @@ cd guacamole-docker-compose
 
 # Install branding.jar
 mkdir -p guacamole_home/extensions
-wget -O guacamole_home/extensions/branding.jar https://github.com/cybershoe/compass-jumphost/raw/refs/heads/branding/branding/branding.jar
+wget -O guacamole_home/extensions/branding.jar ${branding_jar_url}
 sed -i '142i\      - ./guacamole_home:/guacamole_home:rw' docker-compose.yml 
 
 # Generate salted hash for user password
@@ -54,7 +54,7 @@ EOF
 
 # Change Guacamole NGINX to port 443
 sed -i "s/8443:/443:/" docker-compose.yml
-sed -i "
+
 # Retrieve Let's Encrypt cert
 for i in {1..5}; do certbot certonly --standalone --preferred-challenges http-01 -d ${hostname}.${domain} ${certbot_staging}--non-interactive --agree-tos -m webmaster@${domain} && break || sleep 15; done 
 

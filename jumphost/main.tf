@@ -89,12 +89,13 @@ resource "aws_instance" "ubuntu_instance" {
   associate_public_ip_address = true
 
   user_data = templatefile("${path.module}/files/setup.sh.tftpl", {
-    password        = random_string.password[count.index].result,
-    hostname        = "${var.prefix}${format("-%03d", count.index+1)}",
-    domain          = var.dns_domain,
-    lab_guide_url   = var.lab_guide_url,
-    username        = "${format("user%03d", count.index + 1)}",
-    certbot_staging = var.certbot_staging ? "--test-cert " : ""
+    password         = random_string.password[count.index].result,
+    hostname         = "${var.prefix}${format("-%03d", count.index+1)}",
+    domain           = var.dns_domain,
+    lab_guide_url    = var.lab_guide_url,
+    branding_jar_url = var.branding_jar_url
+    username         = "${format("user%03d", count.index + 1)}",
+    certbot_staging  = var.certbot_staging ? "--test-cert " : ""
   })
   user_data_replace_on_change = true
 
