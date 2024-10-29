@@ -14,15 +14,20 @@ variable "region" {
   type = string
 }
 
-variable "ddns_domain" {
-  description = "Domain for dynamic DNS updates"
-  type        = string
-}
+# variable "ddns_domain" {
+#   description = "Domain for dynamic DNS updates"
+#   type        = string
+# }
 
-variable "ddns_password" {
-  description = "Password for dynamic DNS updates"
+# variable "ddns_password" {
+#   description = "Password for dynamic DNS updates"
+#   type        = string
+#   sensitive   = true
+# }
+
+variable "dns_domain" {
+  description = "Domain for DNS records"
   type        = string
-  sensitive   = true
 }
 
 variable "instance_type" {

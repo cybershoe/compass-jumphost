@@ -37,8 +37,9 @@ module "jumphost" {
   keypair_name    = module.cloud.keypair_name
   instance_type   = var.instance_type
   ami_id          = var.ami_id
-  ddns_domain     = var.ddns_domain
-  ddns_password   = var.ddns_password
+  dns_domain      = var.dns_domain
+  # ddns_domain     = var.ddns_domain
+  # ddns_password   = var.ddns_password
   certbot_staging = var.certbot_staging
 }
 
