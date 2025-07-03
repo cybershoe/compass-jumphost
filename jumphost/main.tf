@@ -24,7 +24,7 @@ resource "aws_security_group" "allow_ssh_rdp" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.ssh_source]
   }
 
   ingress {
@@ -87,6 +87,9 @@ resource "aws_instance" "ubuntu_instance" {
   vpc_security_group_ids      = [aws_security_group.allow_ssh_rdp.id]
   key_name                    = var.keypair_name
   associate_public_ip_address = true
+  root_block_device {
+    volume_size = 16
+  }
 
   user_data = templatefile("${path.module}/files/setup.sh.tftpl", {
     password         = random_string.password[count.index].result,

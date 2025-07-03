@@ -31,6 +31,7 @@ module "jumphost" {
   tags             = local.tags
   prefix           = var.prefix
   region           = var.region
+  ssh_source       = var.ssh_source
   replicas         = var.replicas
   vpc_id           = module.cloud.vpc_id
   subnet_id        = module.cloud.public_subnet_id
@@ -52,6 +53,8 @@ resource "tls_private_key" "ssh_key" {
 resource "local_file" "private_key" {
   content  = tls_private_key.ssh_key.private_key_pem
   filename = "./.ssh/terraform_rsa"
+  file_permission = "0600"
+  
 }
 
 resource "local_file" "public_key" {

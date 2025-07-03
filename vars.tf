@@ -70,6 +70,11 @@ variable "availability_zone" {
   default     = "us-east-1a"
 }
 
+variable "ssh_source" {
+  description = "Source IP for SSH access"
+  type        = string
+}
+
 variable "certbot_staging" {
   description = "Set to true to use the staging Let's Encrypt environment"
   type        = bool

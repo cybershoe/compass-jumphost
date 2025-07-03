@@ -12,6 +12,7 @@ Setup
   - `owner`, `purpose`, and `expires` tags for Cloud Custodian
   - `prefix` prepended to created resources
   - `dns_domain` name for programmatic DNS record creation
+  - `ssh_source` CIDR block for SSH access
   #### Optional Variables:
   - `instance_type`, defaults to `t3.small`. `t3.medium` or highter will
     result in a better user experience in exchange for higher cost.

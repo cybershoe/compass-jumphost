@@ -9,8 +9,8 @@ sudo apt update -y
 sudo apt install xfce4 xfce4-goodies gnupg chromium-browser git docker-compose xrdp mongodb-atlas -y
 
 # Install MongoDB Compass
-wget https://downloads.mongodb.com/compass/mongodb-compass_1.44.5_amd64.deb
-sudo apt install ./mongodb-compass_1.44.5_amd64.deb
+wget https://downloads.mongodb.com/compass/mongodb-compass_1.46.5_amd64.deb
+sudo apt install ./mongodb-compass_1.46.5_amd64.deb
 
 # Install Certbot
 snap install --classic certbot
@@ -27,8 +27,10 @@ cd guacamole-docker-compose
 # Install branding.jar
 mkdir -p guacamole_home/extensions
 wget -O guacamole_home/extensions/branding.jar ${branding_jar_url}
-sed -i '142i\      - ./guacamole_home:/guacamole_home:rw' docker-compose.yml 
-sed -i '136i\      GUACAMOLE_HOME: /guacamole_home' docker-compose.yml
+sed -i '/\s\sguacamole\:/,/volumes\:/ { /volumes\:/a\      - ./guacamole_home:/guacamole_home:rw 
+}' docker-compose.yml 
+sed -i '/\s\sguacamole\:/,/environment\:/ { /environment\:/a\      GUACAMOLE_HOME: /guacamole_home
+}' docker-compose.yml
 
 # Generate salted hash for user password
 SALT="$(openssl rand -hex 32 | tr '[:lower:]' '[:upper:]')"

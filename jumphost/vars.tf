@@ -14,6 +14,11 @@ variable "region" {
   type = string
 }
 
+variable "ssh_source" {
+  description = "Source IP for SSH access"
+  type        = string
+}
+
 variable "dns_domain" {
   description = "Domain for DNS records"
   type        = string
