@@ -1,8 +1,27 @@
 compass-jumphost
 ================
 
-Ubuntu Jumphosts with Apache Guacamole installed for in-browser access to 
-MongoDB Compass, mongosh, and atlas-cli in locked-down environments.
+This plan deploys self-contained MongoDB test environments for training and
+demos in locked-down environnments, where network or software restrictions may
+prevent students from using MongoDB tools directly. For each cluster, a Ubuntu
+jumphost is deployed, running guacamole to allow remote access to the desktop
+using only a web browser. Each jumphost deploys with:
+
+- MongoDB Compass
+- Chromium Browser
+- A link to an online lab guide
+- A text file with the connection string for the corresponding Atlas cluster
+
+Prerequisites
+-------------
+
+- Terrform or OpenTofu
+- atlas-cli
+- A DNS domain hosted on Namecheap
+- A Namecheap API key, with the IP of the machine running Terraform/OpenTofu whitelisted
+- A MongoDB Atlas project
+- An API key with Project Owner permissions to the Atlas project
+- Programmatic AWS credentials
 
 Setup
 -----
@@ -12,7 +31,7 @@ Setup
   - `owner`, `purpose`, and `expires` tags for Cloud Custodian
   - `prefix` prepended to created resources
   - `dns_domain` name for programmatic DNS record creation
-  - `ssh_source` CIDR block for SSH access
+  - `atlas_project_id` Atlas Project ID into which the clusters will be deployed
   #### Optional Variables:
   - `instance_type`, defaults to `t3.small`. `t3.medium` or highter will
     result in a better user experience in exchange for higher cost.
@@ -21,6 +40,9 @@ Setup
   - `availability_zone`, defaults to `us-east-1a`
   - `lab_guide_url`, defaults to a placeholder PDF
   - `certbot_staging`, defaults to `false`
+  - `ssh_source` CIDR block for SSH access to the jumohosts for
+  troubleshooting, defaults to the IP of the machine running Terraform as
+  reported by ifconfig.me
 
 > [!TIP]
 > Set `certbot_staging` to `true` for test deployments in order to avoid
@@ -29,6 +51,10 @@ Setup
 
 - Set your environment:
 ```
+export MONGODB_ATLAS_PUBLIC_KEY="my_atlas_public_key"
+export MONGODB_ATLAS_PUBLIC_API_KEY="my_atlas_public_key"
+export MONGODB_ATLAS_PRIVATE_KEY="my_atlas_private_key"
+export MONGODB_ATLAS_PRIVATE_API_KEY="my_atlas_private_key"
 export AWS_ACCESS_KEY_ID="MyAwsAccessKeyID"
 export AWS_SECRET_ACCESS_KEY="MySuperSecretAndVerySecureAWSSecretAccessKey"
 export NAMECHEAP_USER_NAME="MyNamecheapUsername"
@@ -36,6 +62,11 @@ export NAMECHEAP_API_USER="MyNamecheapUsername"
 export NAMECHEAP_API_KEY="MyNamecheapAPIkey"
 
 ```
+> [!NOTE]
+> Your MongoDB Atlas API environment variables need to be specified twice. The
+> Terraform provider and atlas-cli use different environment variable names
+> for authentication.
+
 
 > [!IMPORTANT]
 > Remember to add the egress IP of your terraform/tofu runner to the Namecheap API IP whitelist
@@ -71,7 +102,7 @@ credentials = [
 Connecting
 ----------
 > [!NOTE]
-> Environment setup can take 5-10 (ish) minutes depending on instance size,
+> Environment setup can take 10-20 (ish) minutes depending on instance size,
 > resource contention, and the phase of the moon. 
 
 Once Guacamole has started, browse to the "url" property of a jumphost, and log in with the supplied credentials.
@@ -84,4 +115,5 @@ Troubleshooting
 ---------------
 
 SSH access to the jumphosts is available with the username `ubuntu`, using the
-RSA key located at `.ssh/terraform_rsa`
+RSA key located at `.ssh/terraform_rsa`. Use the `ssh_source` variable to
+override the allowed source IPs for SSH in the NSG.

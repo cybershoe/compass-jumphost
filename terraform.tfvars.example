@@ -2,8 +2,9 @@
 owner              = "default.mcdefaultface"
 purpose            = "other"
 expires            = "1970-01-01"
-prefix             = "default"
+prefix             = "default" # Maximum 19 characters
 dns_domain         = "lab-days.com"
+atlas_project_id   ="673ced10eb4a3545bb4dce5e"
 
 # Optional Variables
 # instance_type      = "t3.small"
@@ -13,3 +14,5 @@ dns_domain         = "lab-days.com"
 # lab_guide_url      = "https://example.com/guide.html"
 # certbot_staging    = false
 # ssh_source         = "1.1.1.1"
+# branding_jar_url   = "https://example.com/branding.jar"
+
