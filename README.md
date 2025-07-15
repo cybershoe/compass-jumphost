@@ -43,6 +43,8 @@ Setup
   - `ssh_source` CIDR block for SSH access to the jumohosts for
   troubleshooting, defaults to the IP of the machine running Terraform as
   reported by ifconfig.me
+  - `branding_jar_url` URL to download custom branding for the guacamole login
+  screen. See: [Branding Extension](https://github.com/Zer0CoolX/guacamole-customize-loginscreen-extension)
 
 > [!TIP]
 > Set `certbot_staging` to `true` for test deployments in order to avoid
