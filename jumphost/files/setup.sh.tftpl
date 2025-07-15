@@ -9,8 +9,11 @@ sudo apt update -y
 sudo apt install xfce4 xfce4-goodies gnupg chromium-browser git docker-compose xrdp mongodb-atlas -y
 
 # Install MongoDB Compass
-wget https://downloads.mongodb.com/compass/mongodb-compass_1.46.5_amd64.deb
-sudo apt install ./mongodb-compass_1.46.5_amd64.deb
+COMPASS_URL=$(curl -s https://api.github.com/repos/mongodb-js/compass/releases/latest | jq -r '.assets[] | select(.name | test("^mongodb-compass_\\d+.\\d+.\\d+_amd64.deb$")) | .browser_download_url')
+COMPASS_FILE=$(basename "$COMPASS_URL")
+
+wget $COMPASS_URL
+sudo apt install ./$COMPASS_FILE
 
 # Install Certbot
 snap install --classic certbot
