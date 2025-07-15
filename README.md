@@ -8,6 +8,8 @@ jumphost is deployed, running guacamole to allow remote access to the desktop
 using only a web browser. Each jumphost deploys with:
 
 - MongoDB Compass
+- mongosh
+- atlas-cli
 - Chromium Browser
 - A link to an online lab guide
 - A text file with the connection string for the corresponding Atlas cluster
