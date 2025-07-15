@@ -73,6 +73,7 @@ variable "availability_zone" {
 variable "ssh_source" {
   description = "Source IP for SSH access"
   type        = string
+  default     = null
 }
 
 variable "certbot_staging" {

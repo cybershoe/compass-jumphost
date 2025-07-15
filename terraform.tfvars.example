@@ -4,7 +4,6 @@ purpose            = "other"
 expires            = "1970-01-01"
 prefix             = "default"
 dns_domain         = "lab-days.com"
-ssh_source         = "1.1.1.1"
 
 # Optional Variables
 # instance_type      = "t3.small"
@@ -13,3 +12,4 @@ ssh_source         = "1.1.1.1"
 # availability_zone  = "us-east-1a"
 # lab_guide_url      = "https://example.com/guide.html"
 # certbot_staging    = false
+# ssh_source         = "1.1.1.1"

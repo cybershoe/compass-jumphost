@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.56"
     }
+    http = {
+      source  = "hashicorp/http"
+      version = "~> 3.1"
+    }
   }
 }
 
@@ -15,6 +19,12 @@ locals {
     purpose = var.purpose
     expires = var.expires
   }
+
+}
+
+data "http" "my_ip" {
+  count = var.ssh_source ? 0 : 1
+  url = "https://ifconfig.me" 
 }
 
 module "cloud" {
@@ -31,7 +41,7 @@ module "jumphost" {
   tags             = local.tags
   prefix           = var.prefix
   region           = var.region
-  ssh_source       = var.ssh_source
+  ssh_source       = var.ssh_source ? var.ssh_source : "${data.http.my_ip[0].body}/32"
   replicas         = var.replicas
   vpc_id           = module.cloud.vpc_id
   subnet_id        = module.cloud.public_subnet_id
