@@ -92,13 +92,15 @@ resource "aws_instance" "ubuntu_instance" {
   }
 
   user_data = templatefile("${path.module}/files/setup.sh.tftpl", {
-    password         = random_string.password[count.index].result,
-    hostname         = "${var.prefix}${format("-%03d", count.index+1)}",
-    domain           = var.dns_domain,
-    lab_guide_url    = var.lab_guide_url,
-    branding_jar_url = var.branding_jar_url
-    username         = "${format("user%03d", count.index + 1)}",
-    certbot_staging  = var.certbot_staging ? "--test-cert " : ""
+    password          = random_string.password[count.index].result,
+    hostname          = "${var.prefix}${format("-%03d", count.index+1)}",
+    domain            = var.dns_domain,
+    lab_guide_url     = var.lab_guide_url,
+    branding_jar_url  = var.branding_jar_url
+    username          = "${format("user%03d", count.index + 1)}",
+    certbot_staging   = var.certbot_staging ? "--test-cert " : "",
+    atlas_hostname    = substr(var.connection_strings[count.index], 14, -1),
+    urlencoded_pw     = urlencode(random_string.password[count.index].result)
   })
   user_data_replace_on_change = true
 

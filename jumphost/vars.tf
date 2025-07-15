@@ -61,3 +61,8 @@ variable "certbot_staging" {
   description = "Set to true to use the staging Let's Encrypt environment"
   type        = bool
 }
+
+variable "connection_strings" {
+  description = "values for connection strings"
+  type        = list(string)
+}

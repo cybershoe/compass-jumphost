@@ -10,6 +10,10 @@ terraform {
       source  = "hashicorp/http"
       version = "~> 3.1"
     }
+    mongodbatlas = {
+      source = "mongodb/mongodbatlas"
+      version = "~> 1.38"
+    }
   }
 }
 
@@ -52,6 +56,18 @@ module "jumphost" {
   lab_guide_url    = var.lab_guide_url
   branding_jar_url = var.branding_jar_url
   certbot_staging  = var.certbot_staging
+  connection_strings = module.atlas.connection_strings
+}
+
+module "atlas" {
+  source       = "./atlas"
+  # public_key   = var.mongodb_atlas_public_api_key
+  # private_key  = var.mongodb_atlas_private_api_key
+  project_id   = var.atlas_project_id
+  prefix       = var.prefix
+  owner        = var.owner
+  replicas     = var.replicas
+  jumphosts    = module.jumphost.instance_password_map
 }
 
 resource "tls_private_key" "ssh_key" {

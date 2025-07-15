@@ -155,6 +155,11 @@ Icon=user-bookmarks
 URL=${lab_guide_url}
 EOF
 
+cat > /home/ubuntu/Desktop/Atlas\ Connection\ String.txt <<EOF
+Atlas Connection String:
+mongodb+srv://${username}:${urlencoded_pw}@${atlas_hostname}
+EOF
+
 ln -s "/usr/share/applications/MongoDB Compass.desktop" "/home/ubuntu/Desktop/MongoDB Compass.desktop"
 ln -s "/usr/share/applications/Lab Guide.desktop" "/home/ubuntu/Desktop/Lab Guide.desktop"
 ln -s "/usr/share/applications/chromium-browser.desktop" "/home/ubuntu/Desktop/chromium-browser.desktop"
