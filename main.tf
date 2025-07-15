@@ -23,8 +23,8 @@ locals {
 }
 
 data "http" "my_ip" {
-  count = var.ssh_source ? 0 : 1
-  url = "https://ifconfig.me" 
+  count = var.ssh_source == null ? 1 : 0
+  url = "https://ifconfig.me/ip" 
 }
 
 module "cloud" {
@@ -41,7 +41,7 @@ module "jumphost" {
   tags             = local.tags
   prefix           = var.prefix
   region           = var.region
-  ssh_source       = var.ssh_source ? var.ssh_source : "${data.http.my_ip[0].body}/32"
+  ssh_source       = var.ssh_source == null ? "${data.http.my_ip[0].response_body}/32" : var.ssh_source
   replicas         = var.replicas
   vpc_id           = module.cloud.vpc_id
   subnet_id        = module.cloud.public_subnet_id
