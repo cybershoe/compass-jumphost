@@ -14,6 +14,17 @@ using only a web browser. Each jumphost deploys with:
 - A link to an online lab guide
 - A text file with the connection string for the corresponding Atlas cluster
 
+> [!CAUTION]
+> This repo is intended for short-lived demo environments, and does things
+> that would be Very Dumb to do in a production environment. Don't use 
+> anything in here as an example of a best practice; check out 
+> [the official MongoDB repository](https://github.com/mongodb/terraform-provider-mongodbatlas/tree/master/examples) 
+> if you want to learn how to do things the Right Way.
+
+> [!WARNING]
+> While I am a MongoDB employee, I'm in pre-sales; neither I nor the code that
+> I write should ever be allowed anywhere near a production system.
+
 Prerequisites
 -------------
 
