@@ -65,9 +65,9 @@ variable "replicas" {
 }
 
 variable "availability_zone" {
-  description = "Availaility zone for public subnet"
+  description = "Availability zone for public subnet"
   type        = string
-  default     = "us-east-1a"
+  default     = null
 }
 
 variable "ssh_source" {
