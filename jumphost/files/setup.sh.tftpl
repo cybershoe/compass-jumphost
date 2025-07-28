@@ -15,8 +15,21 @@ COMPASS_FILE=$(basename "$COMPASS_URL")
 wget $COMPASS_URL
 sudo apt install ./$COMPASS_FILE
 
+# Add vscodium repository
+sudo wget https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg \
+-O /usr/share/keyrings/vscodium-archive-keyring.asc
+echo 'deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/vscodium-archive-keyring.asc ] https://paulcarroty.gitlab.io/vscodium-deb-rpm-repo/debs vscodium main' \
+    | sudo tee /etc/apt/sources.list.d/vscodium.list
+
+# Install vscodium
+sudo apt update -y
+sudo apt install codium -y
+
 # Install Certbot
 snap install --classic certbot
+
+# Clone lab repo
+git clone https://github.com/cybershoe/lab-example.git lab-repo
 
 #######################
 ## Install Guacamole ##
@@ -166,6 +179,9 @@ EOF
 ln -s "/usr/share/applications/MongoDB Compass.desktop" "/home/ubuntu/Desktop/MongoDB Compass.desktop"
 ln -s "/usr/share/applications/Lab Guide.desktop" "/home/ubuntu/Desktop/Lab Guide.desktop"
 ln -s "/usr/share/applications/chromium-browser.desktop" "/home/ubuntu/Desktop/chromium-browser.desktop"
+ln -s "/usr/share/applications/codium.desktop" "/home/ubuntu/Desktop/codium.desktop"
+
+cp -r /lab-repo/lab /home/ubuntu/
 
 # Set user password
 echo "ubuntu:$PASS" | tee /tmp/password_change | sudo chpasswd
