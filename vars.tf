@@ -32,7 +32,7 @@ variable "dns_domain" {
 variable "lab_guide_url" {
   description = "URL to lab guide to place on desktop"
   type        = string
-  default     = "https://raw.githubusercontent.com/cybershoe/compass-jumphost/478027418e7f5bb2be3d41a26aba82b601f474ab/lab-guide.pdf"
+  default     = "http://localhost:3000/"
 }
 
 variable "branding_jar_url" {

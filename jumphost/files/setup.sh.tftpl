@@ -6,7 +6,7 @@ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu noble/mongodb
 
 # Install required packages
 sudo apt update -y
-sudo apt install xfce4 xfce4-goodies gnupg chromium-browser git docker-compose xrdp mongodb-atlas -y
+sudo apt install xfce4 xfce4-goodies gnupg chromium-browser git npm docker-compose xrdp mongodb-atlas -y
 
 # Install MongoDB Compass
 COMPASS_URL=$(curl -s https://api.github.com/repos/mongodb-js/compass/releases/latest | jq -r '.assets[] | select(.name | test("^mongodb-compass_\\d+.\\d+.\\d+_amd64.deb$")) | .browser_download_url')
@@ -28,8 +28,30 @@ sudo apt install codium -y
 # Install Certbot
 snap install --classic certbot
 
+# Install node http-server
+npm install -g http-server
+
 # Clone lab repo
 git clone https://github.com/cybershoe/lab-example.git lab-repo
+
+# # Create docs service
+
+cat > /etc/systemd/system/docs.service <<EOF
+[Unit]
+Description = Lab Documentation Service 
+After = network.target
+
+[Service]
+ExecStart = /usr/local/bin/http-server /lab-repo/docs -p 3000
+Restart=on-failure
+
+[Install]
+WantedBy = multi-user.target
+EOF
+
+# Start docs service
+sudo systemctl enable docs.service
+sudo systemctl start docs.service
 
 #######################
 ## Install Guacamole ##
