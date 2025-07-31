@@ -209,7 +209,11 @@ ln -s "/usr/share/applications/Lab Guide.desktop" "/home/ubuntu/Desktop/Lab Guid
 ln -s "/usr/share/applications/chromium-browser.desktop" "/home/ubuntu/Desktop/chromium-browser.desktop"
 ln -s "/usr/share/applications/codium.desktop" "/home/ubuntu/Desktop/codium.desktop"
 
+# Copy lab files to home directory
 cp -r /lab-repo/lab /home/ubuntu/
+
+# Update codium launcher to open lab directory
+sed -i '/Exec/s/$/ "\/home\/ubuntu\/lab\/"/' codium.desktop
 
 # Set user password
 echo "ubuntu:$PASS" | tee /tmp/password_change | sudo chpasswd
