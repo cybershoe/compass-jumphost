@@ -28,7 +28,7 @@ locals {
 
 data "http" "my_ip" {
   count = var.ssh_source == null ? 1 : 0
-  url = "https://ifconfig.me/ip" 
+  url = "https://api.ipify.org" 
 }
 
 module "cloud" {
