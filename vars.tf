@@ -97,3 +97,9 @@ variable atlas_project_id {
   type        = string
   description = "MongoDB Atlas Project ID"
 }
+
+variable simple_passwords {
+  description = "Use simple passwords for jumphosts"
+  type        = string
+  default     = false
+}

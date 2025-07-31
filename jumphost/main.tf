@@ -53,8 +53,8 @@ resource "aws_security_group" "allow_ssh_rdp" {
   })
 }
 
-resource "random_string" "password" {
-  count            = var.replicas
+resource "random_string" "random_password" {
+  count            = var.simple_passwords ? 0 : var.replicas
   length           = 10
   special          = true
   min_lower        = 1
@@ -62,6 +62,24 @@ resource "random_string" "password" {
   min_special      = 1
   min_numeric      = 1
   override_special = "$#+@%^"
+}
+
+resource "random_pet" "simple_password_base" {
+  count = var.simple_passwords ? var.replicas : 0
+  length = 2
+}
+
+resource "random_string" "simple_password_suffix" {
+  count   = var.simple_passwords ? var.replicas : 0
+  length  = 2
+  upper = false
+  lower= false
+  special = false
+  numeric = true
+}
+
+locals {
+  password = var.simple_passwords ? [for c in range(var.replicas) : "${random_pet.simple_password_base[c].id}-${random_string.simple_password_suffix[c].result}"] : [for c in range(var.replicas) : random_string.random_password[c].result]
 }
 
 data "aws_ami" "ubuntu" {
@@ -92,7 +110,7 @@ resource "aws_instance" "ubuntu_instance" {
   }
 
   user_data = templatefile("${path.module}/files/setup.sh.tftpl", {
-    password          = random_string.password[count.index].result,
+    password          = local.password[count.index],
     hostname          = "${var.prefix}${format("-%03d", count.index+1)}",
     domain            = var.dns_domain,
     lab_guide_url     = var.lab_guide_url,
@@ -100,7 +118,7 @@ resource "aws_instance" "ubuntu_instance" {
     username          = "${format("user%03d", count.index + 1)}",
     certbot_staging   = var.certbot_staging ? "--test-cert " : "",
     atlas_hostname    = substr(var.connection_strings[count.index], 14, -1),
-    urlencoded_pw     = urlencode(random_string.password[count.index].result)
+    urlencoded_pw     = urlencode(local.password[count.index])
   })
   user_data_replace_on_change = true
 
@@ -127,7 +145,7 @@ output "instance_password_map" {
       ip       = aws_instance.ubuntu_instance[i].public_ip
       url      = "https://${var.prefix}${format("-%03d", i + 1)}.${var.dns_domain}/"
       username = "${format("user%03d", i + 1)}"
-      password = random_string.password[i].result
+      password = local.password[i]
     }
   ]
 }
