@@ -96,6 +96,12 @@ EOF
 # Change Guacamole NGINX to port 443
 sed -i "s/8443:/443:/" docker-compose.yml
 
+# Add docker local hostname to nginx
+sed -i '/^  nginx:/a\   extra_hosts:\n    - "host.docker.internal:host-gateway"' docker-compose.yml
+
+# Add /docs/ location to NGINX
+sed -i '/server {/a\location /docs {\nproxy_pass http://host.docker.internal:3000/;\nproxy_buffering off;\nproxy_http_version 1.1;\nproxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\nproxy_set_header Connection $http_connection;\n}' nginx/templates/guacamole.conf.template
+
 # Retrieve Let's Encrypt cert
 for i in {1..5}; do certbot certonly --standalone --preferred-challenges http-01 -d ${hostname}.${domain} ${certbot_staging}--non-interactive --agree-tos -m webmaster@${domain} && break || sleep 15; done 
 
