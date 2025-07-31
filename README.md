@@ -11,6 +11,7 @@ using only a web browser. Each jumphost deploys with:
 - mongosh
 - atlas-cli
 - Chromium Browser
+- VS Codium (open-source build of VS Code)
 - A link to an online lab guide
 - A text file with the connection string for the corresponding Atlas cluster
 
