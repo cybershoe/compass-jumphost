@@ -57,6 +57,7 @@ module "jumphost" {
   branding_jar_url = var.branding_jar_url
   certbot_staging  = var.certbot_staging
   connection_strings = module.atlas.connection_strings
+  simple_passwords = var.simple_passwords
 }
 
 module "atlas" {

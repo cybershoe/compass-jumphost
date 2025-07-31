@@ -66,3 +66,8 @@ variable "connection_strings" {
   description = "values for connection strings"
   type        = list(string)
 }
+
+variable simple_passwords {
+  description = "Use simple passwords for jumphosts"
+  type        = bool
+}

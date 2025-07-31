@@ -58,11 +58,18 @@ Setup
   reported by ifconfig.me
   - `branding_jar_url` URL to download custom branding for the guacamole login
   screen. See: [Branding Extension](https://github.com/Zer0CoolX/guacamole-customize-loginscreen-extension)
+  - `simple_passwords` Generate simple (animal-adjective-number) passwords for
+  easier typing in environments where copying and pasting into the jumphost is
+  not possible. Defaults to `false`
 
 > [!TIP]
 > Set `certbot_staging` to `true` for test deployments in order to avoid
 > triggering the Let's Encrypt rate limit of 5 certificates per hostname 
 > per week.
+
+> [!CAUTION]
+> Using `simple_passwords = true` has obvious security implications. Avoid
+> if at all possible.
 
 - Set your environment:
 ```
