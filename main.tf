@@ -53,6 +53,7 @@ module "jumphost" {
   instance_type    = var.instance_type
   ami_pattern      = var.ami_pattern
   dns_domain       = var.dns_domain
+  lab_repo         = var.lab_repo
   lab_guide_url    = var.lab_guide_url
   branding_jar_url = var.branding_jar_url
   certbot_staging  = var.certbot_staging
