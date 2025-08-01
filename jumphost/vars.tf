@@ -24,6 +24,11 @@ variable "dns_domain" {
   type        = string
 }
 
+variable lab_repo {
+  description = "URL of the lab repository to clone"
+  type        = string
+}
+
 variable "lab_guide_url" {
   description = "URL to lab guide to place on desktop"
   type        = string

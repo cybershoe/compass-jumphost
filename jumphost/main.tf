@@ -113,6 +113,7 @@ resource "aws_instance" "ubuntu_instance" {
     password          = local.password[count.index],
     hostname          = "${var.prefix}${format("-%03d", count.index+1)}",
     domain            = var.dns_domain,
+    lab_repo          = var.lab_repo,
     lab_guide_url     = var.lab_guide_url,
     branding_jar_url  = var.branding_jar_url
     username          = "${format("user%03d", count.index + 1)}",
