@@ -6,7 +6,7 @@ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu noble/mongodb
 
 # Install required packages
 sudo apt update -y
-sudo apt install xfce4 xfce4-goodies gnupg chromium-browser git npm docker-compose xrdp mongodb-atlas -y
+sudo apt install xfce4 xfce4-goodies gnupg chromium-browser git npm docker-compose xrdp mongodb-atlas python3-pymongo -y
 
 # Install MongoDB Compass
 COMPASS_URL=$(curl -s https://api.github.com/repos/mongodb-js/compass/releases/latest | jq -r '.assets[] | select(.name | test("^mongodb-compass_\\d+.\\d+.\\d+_amd64.deb$")) | .browser_download_url')
