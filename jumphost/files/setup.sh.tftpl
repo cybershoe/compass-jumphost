@@ -204,6 +204,8 @@ Atlas Connection String:
 mongodb+srv://${username}:${urlencoded_pw}@${atlas_hostname}
 EOF
 
+echo 'MDB_URI="mongodb+srv://${username}:${urlencoded_pw}@${atlas_hostname}"' >> /etc/environment
+
 ln -s "/usr/share/applications/MongoDB Compass.desktop" "/home/ubuntu/Desktop/MongoDB Compass.desktop"
 ln -s "/usr/share/applications/Lab Guide.desktop" "/home/ubuntu/Desktop/Lab Guide.desktop"
 ln -s "/usr/share/applications/chromium-browser.desktop" "/home/ubuntu/Desktop/chromium-browser.desktop"
