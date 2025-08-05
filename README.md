@@ -52,7 +52,7 @@ Setup
   - `replicas`, defaults to `1`
   - `region`, defaults to `us-east-1`
   - `availability_zone`, defaults to `us-east-1a`
-  - `lab_guide_url`, defaults to a placeholder PDF
+  - `lab_repo`, see [lab repo](#lab-repo) below, defaults to `https://github.com/cybershoe/lab-example.git`
   - `certbot_staging`, defaults to `false`
   - `ssh_source` CIDR block for SSH access to the jumohosts for
   troubleshooting, defaults to the IP of the machine running Terraform as
@@ -129,6 +129,16 @@ Connecting
 > resource contention, and the phase of the moon. 
 
 Once Guacamole has started, browse to the "url" property of a jumphost, and log in with the supplied credentials.
+
+Lab Repo
+--------
+
+The `lab_repo` var points to a git repository containing lab content. It allows you do deploy an online lab guide,
+and pre-populate supporting material (python programs, exmaple data, scripts, etc.) into each jumphost. At deploy time, the following steps happen:
+
+1. The repository in `var.lab_repo` is cloned into `/lab-repo` in the jumphost
+2. A http server is started on the jumphost on port `:3000` with a root of `/lab-repo/docs`, and this is proxied externally at `https://<jumphost domain name>/docs/`
+3. The contents of `/lab-repo/lab/` are copied to `/home/ubuntu/lab`, and chown'd to the `ubuntu` user.
 
 Teardown
 --------
