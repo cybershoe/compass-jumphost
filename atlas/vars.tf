@@ -48,3 +48,8 @@ variable jumphosts {
   }))
   description = "Map of jumphost instance IDs to their passwords"
 }
+
+variable "pause-from" {
+  description = "Value of the pause-from tag on all created cloud resources"
+  type        = string
+}

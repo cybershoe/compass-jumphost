@@ -25,6 +25,11 @@ resource "mongodbatlas_advanced_cluster" "lab_cluster" {
     value = var.owner
   }
 
+  tags {
+    key = "pause-from"
+    value = var.pause-from
+  }
+
   provisioner "local-exec" {
     command = "atlas clusters sampleData load ${self.name} --projectId ${var.project_id}"
   }
