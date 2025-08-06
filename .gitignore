@@ -6,3 +6,4 @@
 core
 .ssh/
 terraform.tfvars
+*-credentials.csv

@@ -94,3 +94,12 @@ resource "local_file" "public_key" {
 output "credentials" {
   value = module.jumphost.instance_password_map
 }
+
+resource "local_file" "credential_csv" {
+  filename = "${var.prefix}-credentials.csv"
+  content = <<EOT
+firstname,lastname,email,jumphost_url,lab_guide_url,username,password
+${join("\n", [for k, v in module.jumphost.instance_password_map : ",,,${v.url},${v.url}docs/,${v.username},${v.password}"])}
+EOT
+
+}
