@@ -47,7 +47,7 @@ Setup
   - `dns_domain` name for programmatic DNS record creation
   - `atlas_project_id` Atlas Project ID into which the clusters will be deployed
   #### Optional Variables:
-  - `instance_type`, defaults to `t3.small`. `t3.medium` or highter will
+  - `instance_type`, defaults to `t3.small`. `t3.medium` or higher will
     result in a better user experience in exchange for higher cost.
   - `replicas`, defaults to `1`
   - `region`, defaults to `us-east-1`
