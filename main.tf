@@ -70,6 +70,7 @@ module "atlas" {
   owner        = var.owner
   replicas     = var.replicas
   jumphosts    = module.jumphost.instance_password_map
+  pause-from   = var.expires
 }
 
 resource "tls_private_key" "ssh_key" {
