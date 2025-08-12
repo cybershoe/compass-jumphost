@@ -45,6 +45,7 @@ Setup
   - `owner`, `purpose`, and `expires` tags for Cloud Custodian
   - `prefix` prepended to created cloud resources
   - `dns_domain` name for programmatic DNS record creation
+  - `atlas_org_id` Atlas organization in which to create a new project
   #### Optional Variables:
   - `instance_type`, defaults to `t3.small`. `t3.medium` or higher will
     result in a better user experience in exchange for higher cost.
