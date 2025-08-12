@@ -99,10 +99,15 @@ variable "certbot_staging" {
 #   sensitive   = true
 # }
 
-variable atlas_project_id {
+# variable atlas_project_id {
+#   type        = string
+#   description = "MongoDB Atlas Project ID"
+# }
+
+variable atlas_org_id {
   type        = string
-  description = "MongoDB Atlas Project ID"
-}
+  description = "MongoDB Atlas Organization ID"
+} 
 
 variable simple_passwords {
   description = "Use simple passwords for jumphosts"

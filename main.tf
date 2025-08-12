@@ -12,7 +12,7 @@ terraform {
     }
     mongodbatlas = {
       source = "mongodb/mongodbatlas"
-      version = "~> 1.38"
+      version = "~> 1.39"
     }
   }
 }
@@ -65,12 +65,13 @@ module "atlas" {
   source       = "./atlas"
   # public_key   = var.mongodb_atlas_public_api_key
   # private_key  = var.mongodb_atlas_private_api_key
-  project_id   = var.atlas_project_id
+  # project_id   = var.atlas_project_id
   prefix       = var.prefix
   owner        = var.owner
   replicas     = var.replicas
   jumphosts    = module.jumphost.instance_password_map
   pause-from   = var.expires
+  atlas_org_id = var.atlas_org_id
 }
 
 resource "tls_private_key" "ssh_key" {

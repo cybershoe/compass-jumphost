@@ -3,9 +3,15 @@
 #   # private_key  = var.private_key
 # }
 
+resource "mongodbatlas_project" "lab" {
+  name   = var.prefix
+  org_id = var.atlas_org_id
+}
+
 resource "mongodbatlas_advanced_cluster" "lab_cluster" {
   count = var.replicas
-  project_id   = var.project_id
+  project_id   = mongodbatlas_project.lab.id
+  
   name         = "${var.prefix}${format("-%03d", count.index+1)}"
   cluster_type = "REPLICASET"
   replication_specs {
@@ -31,13 +37,13 @@ resource "mongodbatlas_advanced_cluster" "lab_cluster" {
   }
 
   provisioner "local-exec" {
-    command = "atlas clusters sampleData load ${self.name} --projectId ${var.project_id}"
+    command = "atlas clusters sampleData load ${self.name} --projectId ${mongodbatlas_project.lab.id}"
   }
 }
 
 resource "mongodbatlas_project_ip_access_list" "local_ip" {
   count = var.replicas
-  project_id = var.project_id
+  project_id = mongodbatlas_project.lab.id
   ip_address = var.jumphosts[count.index].ip
   comment    = "ip address for access from jumphost"
 }
@@ -46,7 +52,7 @@ resource "mongodbatlas_database_user" "test" {
   count              = var.replicas  
   username           = var.jumphosts[count.index].username
   password           = var.jumphosts[count.index].password
-  project_id         = var.project_id
+  project_id         = mongodbatlas_project.lab.id
   auth_database_name = "admin"
 
   roles {

@@ -9,10 +9,15 @@
 #   sensitive   = true
 # }
 
-variable project_id {
+# variable project_id {
+#   type        = string
+#   description = "MongoDB Atlas Project ID"
+# }
+
+variable atlas_org_id {
   type        = string
-  description = "MongoDB Atlas Project ID"
-}
+  description = "MongoDB Atlas Organization ID"
+} 
 
 variable prefix {
   type        = string
