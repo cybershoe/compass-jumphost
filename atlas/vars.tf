@@ -1,17 +1,6 @@
-# variable public_key {
-#   type        = string
-#   description = "MongoDB Atlas Public Key"
-# }
-
-# variable private_key {
-#   type        = string
-#   description = "MongoDB Atlas Private Key"
-#   sensitive   = true
-# }
-
-variable project_id {
+variable atlas_org_id {
   type        = string
-  description = "MongoDB Atlas Project ID"
+  description = "MongoDB Atlas Organization ID"
 }
 
 variable prefix {
@@ -28,16 +17,6 @@ variable replicas {
   type       = number
   description = "Number of clusters to deploy"
 }
-
-# variable jumphost_ips {
-#   type        = list(string)
-#   description = "List of jumphost IPs to allow access to the MongoDB Atlas cluster"
-# }
-
-# variable passwords {
-#   type        = list(string)
-#   description = "List of passwords for the atlas users"
-# }
 
 variable jumphosts {
   type          = list(object({

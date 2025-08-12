@@ -88,20 +88,9 @@ variable "certbot_staging" {
   default     = false
 }
 
-# variable mongodb_atlas_public_api_key {
-#   type        = string
-#   description = "MongoDB Atlas Public Key"
-# }
-
-# variable mongodb_atlas_private_api_key {
-#   type        = string
-#   description = "MongoDB Atlas Private Key"
-#   sensitive   = true
-# }
-
-variable atlas_project_id {
+variable atlas_org_id {
   type        = string
-  description = "MongoDB Atlas Project ID"
+  description = "MongoDB Atlas Organization ID"
 }
 
 variable simple_passwords {

@@ -33,8 +33,8 @@ Prerequisites
 - atlas-cli
 - A DNS domain hosted on Namecheap
 - A Namecheap API key, with the IP of the machine running Terraform/OpenTofu whitelisted
-- A MongoDB Atlas project
-- An API key with Project Owner permissions to the Atlas project
+- A MongoDB Atlas organization
+- An API key with Organization Owner permissions to the Atlas organization
 - Programmatic AWS credentials
 
 Setup
@@ -43,9 +43,9 @@ Setup
 - Copy terraform.tfvars.example to tfvars.tf and edit for your deployment:
   #### Required Variables:
   - `owner`, `purpose`, and `expires` tags for Cloud Custodian
-  - `prefix` prepended to created resources
+  - `prefix` prepended to created cloud resources
   - `dns_domain` name for programmatic DNS record creation
-  - `atlas_project_id` Atlas Project ID into which the clusters will be deployed
+  - `atlas_org_id` Atlas organization in which to create a new project
   #### Optional Variables:
   - `instance_type`, defaults to `t3.small`. `t3.medium` or higher will
     result in a better user experience in exchange for higher cost.
@@ -92,7 +92,8 @@ export NAMECHEAP_API_KEY="MyNamecheapAPIkey"
 
 
 > [!IMPORTANT]
-> Remember to add the egress IP of your terraform/tofu runner to the Namecheap API IP whitelist
+> Remember to add the egress IP of your terraform/tofu runner to both the 
+> MongoDB Atlas API Key Access list and the Namecheap API IP whitelist.
 
 - Deploy to AWS:
 ```
