@@ -14,8 +14,8 @@ provider "aws" {
 }
 
 resource "aws_key_pair" "deployment_keypair" {
-  key_name   = "jumphost_ssh_key"
-  public_key = var.public_key_openssh
+  key_name_prefix = var.prefix
+  public_key      = var.public_key_openssh
 }
 
 resource "aws_vpc" "vpc" {
