@@ -63,9 +63,6 @@ module "jumphost" {
 
 module "atlas" {
   source       = "./atlas"
-  # public_key   = var.mongodb_atlas_public_api_key
-  # private_key  = var.mongodb_atlas_private_api_key
-  # project_id   = var.atlas_project_id
   prefix       = var.prefix
   owner        = var.owner
   replicas     = var.replicas

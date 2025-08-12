@@ -1,8 +1,3 @@
-# provider "mongodbatlas" {
-#   # public_key = var.public_key
-#   # private_key  = var.private_key
-# }
-
 resource "mongodbatlas_project" "lab" {
   name   = var.prefix
   org_id = var.atlas_org_id
