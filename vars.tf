@@ -107,7 +107,7 @@ variable "certbot_staging" {
 variable atlas_org_id {
   type        = string
   description = "MongoDB Atlas Organization ID"
-} 
+}
 
 variable simple_passwords {
   description = "Use simple passwords for jumphosts"

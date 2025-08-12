@@ -17,7 +17,7 @@
 variable atlas_org_id {
   type        = string
   description = "MongoDB Atlas Organization ID"
-} 
+}
 
 variable prefix {
   type        = string
