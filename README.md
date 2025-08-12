@@ -127,7 +127,7 @@ Once Guacamole has started, browse to the "url" property of a jumphost, and log 
 Lab Repo
 --------
 
-The `lab_repo` var points to a git repository containing lab content. It allows you do deploy an online lab guide,
+The `lab_repo` var points to a git repository containing lab content. It allows you to deploy an online lab guide,
 and pre-populate supporting material (python programs, exmaple data, scripts, etc.) into each jumphost. At deploy time, the following steps happen:
 
 1. The repository in `var.lab_repo` is cloned into `/lab-repo` in the jumphost
@@ -143,4 +143,5 @@ Troubleshooting
 
 SSH access to the jumphosts is available with the username `ubuntu`, using the
 RSA key located at `.ssh/terraform_rsa`. Use the `ssh_source` variable to
+
 override the allowed source IPs for SSH in the NSG.
