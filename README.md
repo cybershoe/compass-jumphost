@@ -74,22 +74,15 @@ Setup
 
 - Set your environment:
 ```
-export MONGODB_ATLAS_PUBLIC_KEY="my_atlas_public_key"
 export MONGODB_ATLAS_PUBLIC_API_KEY="my_atlas_public_key"
-export MONGODB_ATLAS_PRIVATE_KEY="my_atlas_private_key"
 export MONGODB_ATLAS_PRIVATE_API_KEY="my_atlas_private_key"
 export AWS_ACCESS_KEY_ID="MyAwsAccessKeyID"
 export AWS_SECRET_ACCESS_KEY="MySuperSecretAndVerySecureAWSSecretAccessKey"
 export NAMECHEAP_USER_NAME="MyNamecheapUsername"
-export NAMECHEAP_API_USER="MyNamecheapUsername"
+export NAMECHEAP_API_USER="MyNamecheapAPIUsername"
 export NAMECHEAP_API_KEY="MyNamecheapAPIkey"
 
 ```
-> [!NOTE]
-> Your MongoDB Atlas API environment variables need to be specified twice. The
-> Terraform provider and atlas-cli use different environment variable names
-> for authentication.
-
 
 > [!IMPORTANT]
 > Remember to add the egress IP of your terraform/tofu runner to both the 
