@@ -62,6 +62,8 @@ Setup
   - `simple_passwords` Generate simple (animal-adjective-number) passwords for
   easier typing in environments where copying and pasting into the jumphost is
   not possible. Defaults to `false`
+  - `ignore_tags_keys` List of tags to ignore when updating AWS resources. Defaults to `[]`
+  - `ignore_tags_key_prefixes` List of tag prefixes to ignore when updating AWS resources. Defaults to `[]`
 
 > [!TIP]
 > Set `certbot_staging` to `true` for test deployments in order to avoid
