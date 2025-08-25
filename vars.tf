@@ -109,4 +109,4 @@ variable ignore_tags_key_prefixes {
   description = "List of tag key prefixes to ignore when applying tags to resources"
   type        = list(string)
   default     = []
-} 
+}
