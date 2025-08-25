@@ -98,3 +98,15 @@ variable simple_passwords {
   type        = string
   default     = false
 }
+
+variable ignore_tags_keys {
+  description = "List of tag keys to ignore when applying tags to resources"
+  type        = list(string)
+  default     = []
+}
+
+variable ignore_tags_key_prefixes {
+  description = "List of tag key prefixes to ignore when applying tags to resources"
+  type        = list(string)
+  default     = []
+}

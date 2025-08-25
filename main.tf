@@ -59,6 +59,8 @@ module "jumphost" {
   certbot_staging  = var.certbot_staging
   connection_strings = module.atlas.connection_strings
   simple_passwords = var.simple_passwords
+  ignore_tags_key_prefixes = var.ignore_tags_key_prefixes
+  ignore_tags_keys = var.ignore_tags_keys
 }
 
 module "atlas" {

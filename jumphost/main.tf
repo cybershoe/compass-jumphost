@@ -15,6 +15,10 @@ terraform {
 
 provider "aws" {
   region = var.region
+  ignore_tags {
+    keys = var.ignore_tags_keys
+    key_prefixes = var.ignore_tags_key_prefixes
+  }
 }
 
 resource "aws_security_group" "allow_ssh_rdp" {
