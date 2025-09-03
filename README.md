@@ -53,6 +53,7 @@ Setup
   - `region`, defaults to `us-east-1`
   - `availability_zone`, defaults to `us-east-1a`
   - `lab_repo`, see [lab repo](#lab-repo) below, defaults to `https://github.com/cybershoe/lab-example.git`
+  - `lab_guide_url`, defaults to `https://localhost:3000`
   - `certbot_staging`, defaults to `false`
   - `ssh_source` CIDR block for SSH access to the jumohosts for
   troubleshooting, defaults to the IP of the machine running Terraform as
