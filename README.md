@@ -51,7 +51,7 @@ Setup
     result in a better user experience in exchange for higher cost.
   - `replicas`, defaults to `1`
   - `region`, defaults to `us-east-1`
-  - `availability_zone`, defaults to `us-east-1a`
+  - `availability_zone`, defaults to `null` (allocated by AWS)
   - `lab_repo`, see [lab repo](#lab-repo) below, defaults to `https://github.com/cybershoe/lab-example.git`
   - `lab_guide_url`, defaults to `https://localhost:3000`
   - `certbot_staging`, defaults to `false`
